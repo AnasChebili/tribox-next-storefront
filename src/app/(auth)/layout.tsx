@@ -15,11 +15,13 @@ export const metadata: Metadata = {
     children: React.ReactNode;
   }>) {
     return (
-      <div className="flex">
+      <div className="flex bg-white">
         <div className="w-1/2">
             <AuthImage></AuthImage>
         </div>
+        <div className=" w-1/2 text-black">
         {children}
+        </div>
       </div>
     );
   }

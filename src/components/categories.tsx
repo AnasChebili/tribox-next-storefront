@@ -49,7 +49,7 @@ export default function Categories() {
         },
     ]
     return (
-        <div className="flex overflow-auto ml-[5%] space-x-6 no-scrollbar">
+        <div className="flex overflow-auto ml-[5%] space-x-6 no-scrollbar pb-3">
             {categs.map((categ, index)=> <Link href="/product-listing" key={index} className=" relative min-w-64 min-h-56 bg-no-repeat bg-cover bg-center rounded-2xl cursor-pointer" style={{ backgroundImage: `url(${categ.image})` }} >
                 
                 <div className="absolute bottom-0 left-0 ml-3 mb-7">

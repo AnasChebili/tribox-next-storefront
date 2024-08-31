@@ -50,18 +50,7 @@ export default function StoreAuth() {
           height={500}
           className="w-full"
         ></Image>
-        <h3 className=" absolute text-5xl font-extralight top-0 xl:top-16 left-10">
-          Ukiyo-e art collection
-        </h3>
-        <h1 className=" absolute left-10 text-6xl w-96 top-12 xl:top-32 tracking-wide">
-          浮世絵コレクション
-        </h1>
-        <p className=" absolute left-10 top-40 text-lg">
-          Straight out of Japan. This is bad copywriting.
-        </p>
-        <button className="absolute left-10 border-black border-2 underline underline-offset-2 font-bold text-lg rounded-lg px-5 py-1  bottom-1">
-          View Details
-        </button>
+        
       </div>
       <div className="mt-4">
       <Recommendations categs={recs2}></Recommendations>

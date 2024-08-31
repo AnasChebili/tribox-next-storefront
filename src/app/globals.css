@@ -67,3 +67,18 @@
     @apply bg-black text-white;
   }
 }
+
+
+::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+  height: 5px;
+   /* Height of the scrollbar (for horizontal scrollbar) */
+}
+
+
+
+::-webkit-scrollbar-thumb {
+  background-color: #888; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners for the thumb */
+   /* Space around the thumb */
+}

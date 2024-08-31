@@ -18,7 +18,7 @@ type categstype = {
 export default function Recommendations({ categs }: categstype) {
   return (
     <div>
-      <div className="flex overflow-auto ml-[5%] space-x-6 no-scrollbar ">
+      <div className="flex overflow-auto ml-[5%] space-x-6 pb-3 ">
         {categs.map((categ, index) => (
           <div key={index} className="min-w-64">
             <RecCard
