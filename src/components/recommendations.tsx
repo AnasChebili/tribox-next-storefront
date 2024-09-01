@@ -21,7 +21,7 @@ export default function Recommendations({ categs }: categstype) {
       <div className="flex overflow-auto ml-[5%] space-x-6 pb-3 ">
         {categs.map((categ, index) => (
           <div key={index} className="min-w-64">
-            <RecCard
+            <RecCard 
               image={categ.image}
               rating={categ.rating}
               title={categ.title}
@@ -29,6 +29,7 @@ export default function Recommendations({ categs }: categstype) {
               author={categ.author}
               tags={categ.tags}
               description={categ.description}
+              id={index}
             ></RecCard>
           </div>
         ))}

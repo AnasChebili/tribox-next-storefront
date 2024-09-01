@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Provider from "./_trpc/Provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,7 +15,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body >{children}
+      <body >
+        <Provider>{children}</Provider>
         <Toaster richColors  ></Toaster>
       </body>
     </html>

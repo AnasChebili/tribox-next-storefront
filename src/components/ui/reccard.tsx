@@ -10,6 +10,7 @@ export default function RecCard({
   author,
   tags,
   description,
+  id
 }: {
   image: string,
   rating: string,
@@ -17,11 +18,12 @@ export default function RecCard({
   date: string,
   author:string,
   tags: Array<string>,
-  description: string
+  description: string,
+  id:number
 
 }) {
   return <div className="cursor-pointer">
-    <Link href="/product-listing">
+    <Link href={`/product-listing/${id}`}>
     <Image src={image} alt="" width={400} height={350}></Image>
     <div className="flex px-2 py-[2px] rounded-md bg-orange-300 text-black w-fit mt-4">
         <p className="font-semibold text-xs mr-1">{rating}</p>

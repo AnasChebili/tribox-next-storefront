@@ -1,89 +1,56 @@
 "use client";
-import { ChangeEventHandler, useEffect, useState } from "react";
-import { login, signup } from "../actions";
-import { Divide } from "lucide-react";
+
+import { login } from "../actions";
+
 import { z } from "zod";
 import { cn } from "@/lib/utils";
-import { error } from "console";
-import { useFormState } from "react-dom";
 import { toast } from "sonner";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Spinner } from "@/components/ui/spinner";
 
-const InputField = ({
-  label,
-  id,
-  name,
-  type,
-  placeholder,
-  value,
-  error,
-  onChange,
-}: {
-  label: string;
-  id: string;
-  name: string;
-  type: string;
-  placeholder: string;
-  value: string;
-  error: string;
-  onChange: ChangeEventHandler<HTMLInputElement>;
-}) => {
-  return (
-    <>
-      <label
-        htmlFor={id}
-        className={cn("block font-bold text-xs mb-5", {
-          "text-red-500": error,
-        })}
-      >
-        {label}
-      </label>
-      <input
-        id={id}
-        name={name}
-        type={type}
-        required
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        className={cn(
-          "block text-black bg-gray-300 bg-opacity-25 text-xs py-4 pl-2 rounded-lg w-full",
-          { "border-2 border-red-500 bg-red-100 text-red-500": error }
-        )}
-      />
-      {error && <p className="text-xs text-red-500">{error}</p>}
-    </>
-  );
-};
+export const loginFormSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Please enter email")
+    .email("Please enter a valid email"),
+  password: z.string().min(1, "Please enter password"),
+});
 
-const passwordSchema = z.string().min(1);
+export type LoginForm = z.infer<typeof loginFormSchema>;
 
 export default function LoginPage() {
-  const [formState, setFormState] = useFormState(login, null);
-  const emailSchema = z.string().email();
-
-  useEffect(() => {
-    if (formState?.error) toast.error(formState.error);
-    else if (formState?.data) toast.success(formState.data)
-  }, [formState]);
-
-  interface formValues {
-    email: string;
-    password: string;
-  }
-
-  const [errors, setErrors] = useState<formValues>({ email: "", password: "" });
-  const [values, setValues] = useState<formValues>({ email: "", password: "" });
+  const {
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    register,
+  } = useForm({
+    values: {
+      email: "",
+      password: "",
+    },
+    mode: "onChange",
+    resolver: zodResolver(loginFormSchema),
+  });
 
   const isDisabled = Boolean(errors.password || errors.email);
 
   return (
-    <form className="my-[30%] w-[50%] mx-auto">
+    <form
+      onSubmit={handleSubmit(async (values) => {
+        const result = await login(values);
+        if (result?.error) toast.error(result.error);
+        else if (result?.data) toast.success(result.data);
+      })}
+      className="my-[30%] w-[50%] mx-auto"
+    >
       <div className="flex">
-        <div className="border-b-[3px] border-blue-600 font-bold text-xl pl-4 pr-2 pb-2">
+        <div className="border-b-[3px] border-blue-600 font-bold text-xl pl-4 pr-2 pb-2 cursor-pointer">
           Sign-in
         </div>
         <div className="border-b-[3px] border-gray-300 font-light text-xl pl-8 pr-4 pb-2 text-gray-500">
-          Create an account
+          <Link href="/register">Create an account</Link>
         </div>
       </div>
       <div className="mt-10 mb-10">
@@ -93,53 +60,55 @@ export default function LoginPage() {
         </p>
       </div>
       <div>
-        <InputField
-          label="Email"
+        <label
+          htmlFor="email"
+          className={cn("block font-bold text-xs mb-5", {
+            "text-red-500": errors.email,
+          })}
+        >
+          Email
+        </label>
+        <input
           id="email"
-          name="email"
           type="email"
+          required
           placeholder="Enter your email"
-          value={values.email}
-          error={errors.email}
-          onChange={(e) => {
-            if (!emailSchema.safeParse(e.target.value).success)
-              setErrors((prevvalue) => ({
-                ...prevvalue,
-                email: "Invalid email",
-              }));
-            else if (errors.email)
-              setErrors((prevvalue) => ({ ...prevvalue, email: "" }));
-            setValues((prevvalue) => ({
-              ...prevvalue,
-              email: e.target.value,
-            }));
-          }}
-        ></InputField>
+          {...register("email")}
+          className={cn(
+            "block text-black bg-gray-300 bg-opacity-25 text-xs py-4 pl-2 rounded-lg w-full",
+            { "border-2 border-red-500 bg-red-100 text-red-500": errors.email }
+          )}
+        />
+        {errors.email && (
+          <p className="text-xs text-red-500">{errors.email.message}</p>
+        )}
+
         <div className="mt-8">
-          <InputField
-            label="Password"
+          <label
+            htmlFor="password"
+            className={cn("block font-bold text-xs mb-5", {
+              "text-red-500": errors.password,
+            })}
+          >
+            Password
+          </label>
+          <input
             id="password"
-            name="password"
             type="password"
+            required
             placeholder="Enter your password"
-            value={values.password}
-            error={errors.password}
-            onChange={(e) => {
-              const result = passwordSchema.safeParse(e.target.value);
-              console.log(result);
-              if (!result.success)
-                setErrors((prevvalue) => ({
-                  ...prevvalue,
-                  password: "Password is required",
-                }));
-              else if (errors.password)
-                setErrors((prevvalue) => ({ ...prevvalue, password: "" }));
-              setValues((prevvalue) => ({
-                ...prevvalue,
-                password: e.target.value,
-              }));
-            }}
-          ></InputField>
+            {...register("password")}
+            className={cn(
+              "block text-black bg-gray-300 bg-opacity-25 text-xs py-4 pl-2 rounded-lg w-full",
+              {
+                "border-2 border-red-500 bg-red-100 text-red-500":
+                  errors.password,
+              }
+            )}
+          />
+          {errors.password && (
+            <p className="text-xs text-red-500">{errors.password.message}</p>
+          )}
         </div>
 
         <div className="flex justify-between mt-8">
@@ -155,12 +124,16 @@ export default function LoginPage() {
           <p className="text-xs font-bold text-purple-950">Forgot Password?</p>
         </div>
         <button
-          disabled={isDisabled}
-          formAction={setFormState}
-          className={cn("w-full text-white bg-black mt-8 py-3 rounded-md", {
-            "opacity-50": isDisabled,
-          })}
+          disabled={isDisabled || isSubmitting}
+          type="submit"
+          className={cn(
+            "w-full text-white bg-black mt-8 py-3 rounded-md flex justify-center items-center gap-3",
+            {
+              "opacity-50": isDisabled || isSubmitting,
+            }
+          )}
         >
+          {isSubmitting && <Spinner className="w-5 h-5 text-white"></Spinner>}
           Sign in
         </button>
 

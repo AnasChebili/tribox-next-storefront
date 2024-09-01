@@ -7,6 +7,9 @@ import { z } from "zod";
 import { format } from "path";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 export const registerFormSchema = z
   .object({
@@ -31,10 +34,12 @@ export const registerFormSchema = z
 export type RegisterForm = z.infer<typeof registerFormSchema>;
 
 export default function Home() {
+  const [emailMessage, setEmailMessage]=useState(false)
   const {
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
     register,
+
   } = useForm({
     values: {
       email: "",
@@ -44,27 +49,29 @@ export default function Home() {
     mode: "onChange",
     resolver: zodResolver(registerFormSchema),
   });
+
+  const isDisabled = Boolean(errors.password || errors.email || errors.confirmPassword);
   return (
     <form
       onSubmit={handleSubmit(async (values) => {
         const result = await signup(values);
         if (result?.error) toast.error(result.error);
-        else if (result?.data) toast.success(result.data);
+        else if (result?.data) {toast.success(result.data);setEmailMessage(true)};
       })}
       className="my-[30%] w-[50%] mx-auto"
     >
       <div className="flex">
-        <div className="border-b-[3px] border-blue-600 font-bold text-xl pl-4 pr-2 pb-2">
-          Sign-in
+        <div className="border-b-[3px] border-gray-300 font-light text-xl pl-4 pr-2 pb-2 text-gray-500">
+          <Link href="/login">Sign-in</Link>
         </div>
-        <div className="border-b-[3px] border-gray-300 font-light text-xl pl-8 pr-4 pb-2 text-gray-500">
+        <div className="border-b-[3px]  border-blue-600  font-bold text-xl pl-8 pr-4 pb-2  cursor-pointer">
           Create an account
         </div>
       </div>
       <div className="mt-10 mb-10">
-        <h1 className="font-bold text-4xl font-serif">Welcome Back.</h1>
-        <p className="text-xs w-1/2 mt-2">
-          Enter your email and password to access your account
+        <h1 className="font-bold text-4xl font-serif">Welcome To Di-Box</h1>
+        <p className="text-xs w-2/3 mt-2">
+        Just need a little bit of your information and I’ll give you your very own account!
         </p>
       </div>
       <div>
@@ -74,7 +81,6 @@ export default function Home() {
             "text-red-500": errors?.email,
           })}
         >
-          
           Email
         </label>
         <input
@@ -88,10 +94,15 @@ export default function Home() {
           )}
           {...register("email")}
         />
-        {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
-        <label htmlFor="password" className={cn("block font-bold text-xs mb-5 mt-8",{
+        {errors.email && (
+          <p className="text-xs text-red-500">{errors.email.message}</p>
+        )}
+        <label
+          htmlFor="password"
+          className={cn("block font-bold text-xs mb-5 mt-8", {
             "text-red-500": errors?.password,
-          })}>
+          })}
+        >
           Password:
         </label>
         <input
@@ -101,14 +112,19 @@ export default function Home() {
           placeholder="Enter your passowrd"
           className={cn(
             "block text-black bg-gray-300 bg-opacity-25 text-xs py-4 pl-2 rounded-lg w-full",
-            { "border-2 border-red-500 bg-red-100 text-red-500": errors.password }
+            {
+              "border-2 border-red-500 bg-red-100 text-red-500":
+                errors.password,
+            }
           )}
           {...register("password")}
         />
-        {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
+        {errors.password && (
+          <p className="text-xs text-red-500">{errors.password.message}</p>
+        )}
         <label
           htmlFor="confirm-password"
-          className={cn("block font-bold text-xs mb-5 mt-8",{
+          className={cn("block font-bold text-xs mb-5 mt-8", {
             "text-red-500": errors?.confirmPassword,
           })}
         >
@@ -121,20 +137,39 @@ export default function Home() {
           placeholder="Enter your passowrd"
           className={cn(
             "block text-black bg-gray-300 bg-opacity-25 text-xs py-4 pl-2 rounded-lg w-full",
-            { "border-2 border-red-500 bg-red-100 text-red-500": errors.confirmPassword }
+            {
+              "border-2 border-red-500 bg-red-100 text-red-500":
+                errors.confirmPassword,
+            }
           )}
           {...register("confirmPassword")}
         />
-        {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>}
+        {errors.confirmPassword && (
+          <p className="text-xs text-red-500">
+            {errors.confirmPassword.message}
+          </p>
+        )}
         
+        {emailMessage && <div className="mt-10">
+        <h1 className="font-bold text-4xl font-serif">We sent you a confirmation Email!</h1>
+        <p className="text-xs w-2/3 mt-2">
+        Check your email inbox and click on the confirmation link to complete your sign up!
+        </p>
+      </div>}
+
         <button
+          disabled={isDisabled || isSubmitting}
           type="submit"
-          className="w-full text-white bg-black mt-8 py-3 rounded-md"
+          className={cn("w-full text-white bg-black mt-8 py-3 rounded-md flex justify-center gap-3 items-center",{"opacity-50":isDisabled || isSubmitting})}
         >
-          Sign up
+          {
+            isSubmitting && <Spinner className="w-5 h-5 text-white"></Spinner>
+          }
+          Sign up 
         </button>
         {/* <button formAction={signup}>Sign up</button> */}
       </div>
+      
     </form>
   );
 }
