@@ -82,3 +82,8 @@
   border-radius: 10px; /* Rounded corners for the thumb */
    /* Space around the thumb */
 }
+
+input::file-selector-button {
+  @apply cursor-pointer bg-transparent text-gray-400 rounded-lg py-2
+
+}

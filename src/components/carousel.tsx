@@ -21,12 +21,12 @@ export default function Carousel({ images }: { images: string[] }) {
       <div className="relative w-full ">
         <div className="relative z-0">
           {
-            <div  className="h-[50vw] w-full flex justify-center items-center ">
+            <div  className="h-[50vw] w-full  flex justify-center items-center ">
               <Image
                 src={images[currentIndex]}
                 alt=""
                 fill
-                className="object-cover min-h-full min-w-full "
+                className="object-cover"
               />
             </div>
           }

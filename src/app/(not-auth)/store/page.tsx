@@ -1,12 +1,27 @@
+"use client";
 import Categories from "@/components/categories";
 import Morning from "@/components/morning";
-import Recommendations from "@/components/recommendations";
+import Recommendations, { categstype } from "@/components/recommendations";
 import recs1 from "../../../data/reccomendations.json";
 import recs2 from "../../../data/reccomendationsjapan.json";
 import Image from "next/image";
+import { trpc } from "@/app/_trpc/client";
+import { useEffect, useState } from "react";
+import { createClient } from "../../../../utils/supabase/client";
 
 export default function StoreAuth() {
+  const supabase = createClient()
+
+  const [imgUrl, setImgUrl] = useState<string | null>()
+
+  const products = trpc.getTodos.useQuery();
+  const isLoading = products.isLoading;
+  const recs3 = products.data;
+  console.log(recs3, isLoading);
+
+
   return (
+    
     <div className="mb-28">
       <Morning></Morning>
       <h1 className="my-11 text-4xl font-bold ml-[5%]">Top Categories</h1>
@@ -17,7 +32,7 @@ export default function StoreAuth() {
           Personally Picked from your taste and by spying on you.
         </p>
       </div>
-      <Recommendations categs={recs1}></Recommendations>
+      <Recommendations categs={recs3 ? recs3 :[]}></Recommendations>
       <div className="my-11  mx-[5%]">
         <Image
           src="/elara.png"
@@ -41,7 +56,7 @@ export default function StoreAuth() {
           scrambled it to make a type specimen book.
         </p>
       </div>
-      <Recommendations categs={recs1}></Recommendations>
+      <Recommendations categs={recs3 ? recs3 :[]}></Recommendations>
       <div className="my-20 hidden md:block  mx-[5%] relative text-black">
         <Image
           src="/japanart.png"
@@ -50,10 +65,9 @@ export default function StoreAuth() {
           height={500}
           className="w-full"
         ></Image>
-        
       </div>
       <div className="mt-4">
-      <Recommendations categs={recs2}></Recommendations>
+        <Recommendations categs={/* !isLoading ? recs3 : [] */ recs3 ? recs3 :[]}></Recommendations>
       </div>
     </div>
   );
