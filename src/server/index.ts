@@ -5,7 +5,7 @@ import { z } from "zod";
 const todoSchema = z.object({
   
   created_at: z.coerce.date(),
-  image: z.string(),
+  image: z.array(z.string()),
   rating: z.number(),
   title: z.string(),
   date: z.string(),
@@ -47,6 +47,19 @@ export const appRouter = router({
 
     return { success: true };
   }),
+  getProduct: publicProcedure
+  .input(z.string().uuid())
+  .query(async ({input}) => {
+    console.log(input);
+    
+    const supabase = createClient();
+    const { data: product } = await supabase.from("products").select().eq('id', input);
+    console.log("data");
+
+    console.log(product);
+
+    return product
+})
 });
 
 export type AppRouter = typeof appRouter;

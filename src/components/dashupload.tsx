@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ChangeEvent, ReactEventHandler, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -10,21 +10,36 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 
-import { log } from "console";
 import { trpc } from "@/app/_trpc/client";
-import DashProducts from "@/components/dashproducts";
 import { createClient } from "../../utils/supabase/client";
+import { getQueryKey } from "@trpc/react-query";
+import ImageUpload from "./ui/imageUpload";
 
-export default function DashUpload( {onDataUpload}: {onDataUpload: () => void}) {
+type productUpload = {
+  created_at: Date;
+  image: string[];
+  rating: number;
+  title: string;
+  date: string;
+  author: string;
+  tags: string[];
+  description: string;
+};
+
+export default function DashUpload() {
+  const [imageState, setImageState] = useState(["", "", "", ""]);
+
   const supabase = createClient();
 
   const addTodoMutation = trpc.addTodo.useMutation();
+  const utils = trpc.useUtils();
 
-  function handleAddTodo(data) {
+  function handleAddTodo(data: productUpload) {
     addTodoMutation.mutate(data, {
       onSuccess: () => {
         console.log("Todo added successfully!");
-        onDataUpload()
+        utils.invalidate(undefined, { queryKey: getQueryKey(trpc.getProduct) });
+        /* onDataUpload(); */
         // Optionally, clear form or update UI after successful addition
       },
       onError: (error) => {
@@ -35,21 +50,36 @@ export default function DashUpload( {onDataUpload}: {onDataUpload: () => void}) 
 
   let imageId: string = "";
 
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      title: "",
+      description: "",
+      tags: "",
+    },
+  });
   const [open, setOpen] = useState(false);
 
   // Handle file upload event
-  const uploadFile = async (event) => {
+  const uploadFile = async (event: ChangeEvent<HTMLInputElement>) => {
     console.log(event);
     console.log(event.target);
     console.log(event.target.files);
 
-    const file = event.target.files[0];
+    const file = event.target.files![0];
     imageId = `${Math.random()}.${file.name}`;
     console.log(file);
     console.log(file.name);
 
     const bucket = "documents";
+
+    setImageState((prevvalue) => {
+      console.log(prevvalue);
+
+      prevvalue[parseInt(event.target.id)] = imageId;
+
+      console.log(prevvalue);
+      return prevvalue;
+    });
 
     // Call Storage API to upload file
     const { data, error } = await supabase.storage
@@ -81,40 +111,43 @@ export default function DashUpload( {onDataUpload}: {onDataUpload: () => void}) 
         <DialogContent className="max-w-md w-full border-0 p-6 bg-gray-900 bg-opacity-95 text-gray-400 rounded-lg shadow-md">
           <DialogTitle>Upload Product</DialogTitle>
           <form
-            onSubmit={handleSubmit((data) => {
-              data.tags = data.tags.split(",");
-              console.log(data.tags);
+            onSubmit={handleSubmit((values) => {
+              const transformedValues = {
+                ...values,
+                tags: values.tags.split(","),
+              };
 
-              data = {
-                ...data,
-                
+              console.log(transformedValues.tags);
+
+              const data = {
+                ...transformedValues,
+
                 created_at: new Date(),
-                image: imageId,
+                image: imageState,
                 rating: 4,
                 date: "6/4/08",
                 author: "abbas",
               };
               console.log(data);
-
-              handleAddTodo(data);
+              if (imageState.every((element) => element === "")){
+                alert("you need at least one picture")
+              }
+              else {
+                handleAddTodo(data);
 
               reset();
               setOpen(false);
-              
+
+              }
+                
             })}
             className="space-y-4 "
           >
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Product Image
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                required
-                onChange={uploadFile}
-                className="mt-1 block w-full rounded-md border-0 cursor-pointer"
-              />
+              <ImageUpload onChange={uploadFile} id="0"></ImageUpload>
+              <ImageUpload onChange={uploadFile} id="1"></ImageUpload>
+              <ImageUpload onChange={uploadFile} id="2"></ImageUpload>
+              <ImageUpload onChange={uploadFile} id="3"></ImageUpload>
             </div>
 
             <div>

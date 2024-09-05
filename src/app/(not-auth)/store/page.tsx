@@ -23,6 +23,7 @@ export default function StoreAuth() {
   return (
     
     <div className="mb-28">
+      
       <Morning></Morning>
       <h1 className="my-11 text-4xl font-bold ml-[5%]">Top Categories</h1>
       <Categories></Categories>
@@ -32,7 +33,7 @@ export default function StoreAuth() {
           Personally Picked from your taste and by spying on you.
         </p>
       </div>
-      <Recommendations categs={recs3 ? recs3 :[]}></Recommendations>
+      <Recommendations categs={recs3}></Recommendations>
       <div className="my-11  mx-[5%]">
         <Image
           src="/elara.png"

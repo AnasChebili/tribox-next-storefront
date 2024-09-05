@@ -1,13 +1,20 @@
+"use client"
 import Recommendations from "@/components/recommendations";
 import recs1 from "../../../../data/reccomendations.json";
 import ProductDescription from "@/components/product-description";
 import ProductFormats from "@/components/product-formats";
 import Image from "next/image";
 import Carousel from "@/components/carousel";
+import { trpc } from "@/app/_trpc/client";
 
 
 export default function ProductListing({params}:{params:{id:string}}) {
   console.log(params.id)
+
+  const productObj = trpc.getProduct.useQuery(params.id);
+  const isLoading = productObj.isLoading;
+  const  data = productObj.data;
+  console.log(data, isLoading);
   const product: {
     image:string
     rating: string;
@@ -16,7 +23,7 @@ export default function ProductListing({params}:{params:{id:string}}) {
     author: string;
     tags: Array<string>;
     description: string;
-  } = recs1[(parseInt(params.id))]
+  } = data ? data[0] : recs1[0]
   const prod:{
     formats: string[],
     ID: string,
@@ -26,9 +33,10 @@ export default function ProductListing({params}:{params:{id:string}}) {
     ID:"13fiomoasfj-11ad",
     softwares:["/blender.png", "/ps.png"]
   }
-  const images : string[] = [product.image,"/carousel2.png","/carousel3.png","/carousel4.png",]
+  const images : string[] = [/* product.image, */"/carousel2.png","/carousel3.png","/carousel4.png",]
   return (
     <div className="mb-28">
+      <div>{JSON.stringify(data)}</div>
       <div className="mx-[5%] mt-20">
       <div className="flex   space-x-4 items-center">
         <div className=" shadow cursor-pointer shadow-white w-9 h-9 rounded-full bg-white flex items-center">

@@ -17,7 +17,7 @@ export default function RecCard({
   id
 }: {
   image: string,
-  rating: string,
+  rating: number,
   title: string,
   date: string,
   author:string,
@@ -58,7 +58,7 @@ export default function RecCard({
     downloadImage(image)
     console.log(imgUrl);
       
-  }, [supabase])
+  }, [])
 
 
   return <div className="cursor-pointer">
@@ -66,7 +66,7 @@ export default function RecCard({
     <div className="h-[225px] overflow-hidden">
       { imgUrl ?
       <Image src={imgUrl} alt="" width={400} height={350} className="object-cover min-h-[225px]"></Image> :
-      <Skeleton className="h-[225px] w-[250px] rounded-xl bg-gray-500" />
+      <Skeleton className="h-[225px] w-[250px] rounded-[0px] bg-gray-500" />
       } 
     
     </div>
@@ -74,21 +74,21 @@ export default function RecCard({
         <p className="font-semibold text-xs mr-1">{rating}</p>
         <Image src="/Star 7.svg" alt="" width={10} height={10}></Image>
     </div>
-    <h1 className="text-3xl font-bold w-[75%]">{title}</h1>
+    <h1 className="text-3xl h-[80px] font-bold w-[75%]">{title}</h1>
     <div className="flex mt-1">
     <p className="font-bold text-sm mr-2">Upload Date</p>
     <p className="font-extralight text-sm">{date}</p>
     </div>
     <div className="flex mt-1">
     <p className="font-bold mr-2 text-sm ">Author </p>
-    <p className="font-extralight text-sm">{author}</p>
+    <p className="font-extralight text-sm truncate">{author}</p>
     </div>
     <div className="flex mt-2 flex-wrap ">
     {tags.map((tag,index)=>(<div key={index} className="bg-white px-3 font-bold text-xs text-center text-black mr-2 mb-2 rounded-lg ">
         {tag}
     </div>))}
     </div>
-    <p className="mt-2 text-[10px] font-light">{description}</p>
+    <p className="mt-2 text-[10px] font-light text-ellipsis overflow-hidden line-clamp-3 h-[45px]">{description}</p>
     <button className="underline text-orange-300 mt-2 text-xl underline-offset-2">View Details</button>
     </Link>
   </div>;
