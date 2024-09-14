@@ -1,7 +1,25 @@
+"use client";
+import { trpc } from "@/app/_trpc/client";
 import WorkCard from "./ui/workcard";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
-export default function Works() {
-  const works: Array<{
+const FilterSelect = ({
+  title,
+  isSelected,
+}: {
+  title: string;
+  isSelected: boolean;
+}) => {
+  return <li className={cn({ "text-red-600 flex": isSelected })}>{title}</li>;
+};
+
+export default function Works({
+  initialFilter = "",
+}: {
+  initialFilter: string;
+}) {
+  /* const works: Array<{
     image: string;
     rating: string;
     title: string;
@@ -100,38 +118,67 @@ export default function Works() {
       description:
         "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
     },
+  ]; */
+
+  /*  const worksObj = trpc.getTodos.useQuery();
+  const works = worksObj.data; */
+
+  const [filter, setFilter] = useState(initialFilter);
+
+  const { data: works } = trpc.filterByTag.useQuery(filter);
+
+  const filterSelects = [
+    { title: "3D Models", key: "3d-models" },
+    { title: "Mockups", key: "mockups" },
+    { title: "Templates", key: "templates" },
+    { title: "Audio Samples", key: "audio-samples" },
+    { title: "Photos", key: "photos" },
+    { title: "Presentation Template", key: "presentation-template" },
+    { title: "Fonts", key: "fonts" },
   ];
+
   return (
-    <div className="flex flex-col items-center mx-[5%] my-24">
-      <h1 className="text-5xl font-extralight">FEATURED WORKS</h1>
+    <div className="flex flex-col items-center ">
       <div className="my-12">
-      <ul className=" hidden md:flex space-x-6  cursor-pointer">
-        <li className="text-red-600 flex">
-          {" "}
-          <span className="mt-1 block">3</span>D Models
-        </li>
-        <li>Mockups</li>
-        <li>Templates</li>
-        <li>Audio Samples</li>
-        <li>Photos</li>
-        <li>Presentation Template</li>
-        <li>Fonts</li>
-      </ul>
+        <ul className=" hidden md:flex space-x-6  cursor-pointer">
+          <li
+            className={cn({ "text-red-600 flex": filter === "" })}
+            onClick={() => {
+              setFilter("");
+            }}
+          >
+            All
+          </li>
+          {filterSelects.map((element, index) => (
+            <div
+              key={index}
+              onClick={() => {
+                setFilter(element.title);
+              }}
+            >
+              <FilterSelect
+                title={element.title}
+                isSelected={element.title === filter}
+              ></FilterSelect>
+            </div>
+          ))}
+        </ul>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-28">
-        {works.map((work, index) => (
-          <WorkCard
-            image={work.image}
-            rating={work.rating}
-            title={work.title}
-            date={work.date}
-            author={work.author}
-            tags={work.tags}
-            description={work.description}
-            id={index}
-            key={index}
-          ></WorkCard>
-        ))}
+        {works &&
+          works.map((work, index) => (
+            <WorkCard
+              image={work.image}
+              rating={work.rating}
+              title={work.title}
+              date={work.date}
+              author={work.author}
+              tags={work.tags}
+              description={work.description}
+              id={index}
+              key={index}
+            ></WorkCard>
+          ))}
       </div>
     </div>
   );

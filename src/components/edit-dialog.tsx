@@ -14,28 +14,44 @@ import { trpc } from "@/app/_trpc/client";
 import { createClient } from "../../utils/supabase/client";
 import { getQueryKey } from "@trpc/react-query";
 import ImageUpload from "./ui/imageUpload";
+import Image from "next/image";
+import { UUID } from "crypto";
 
 type productUpload = {
-  created_at: Date;
-  image: string[];
-  rating: number;
-  title: string;
-  date: string;
-  author: string;
-  tags: string[];
-  description: string;
+  id: string;
+  data: {
+    image?: string[];
+    title?: string;
+    tags?: string[];
+    description?: string;
+  };
 };
 
-export default function DashUpload() {
-  const [imageState, setImageState] = useState<string[]>([]);
+export default function EditDialog({ id }: { id: UUID }) {
+  console.log("edit");
+  const productObj = trpc.getProduct.useQuery(id);
+  const isLoading = productObj.isLoading;
+  const data = productObj.data;
+  console.log(data, isLoading);
+  const product: {
+    image: string[];
+    rating: string;
+    title: string;
+    date: string;
+    author: string;
+    tags: Array<string>;
+    description: string;
+  } = data ? data[0] : {};
+
+  const [imageState, setImageState] = useState<string[]>(product.image);
 
   const supabase = createClient();
 
-  const addTodoMutation = trpc.addTodo.useMutation();
+  const updateProductMutation = trpc.updateProduct.useMutation();
   const utils = trpc.useUtils();
 
   function handleAddTodo(data: productUpload) {
-    addTodoMutation.mutate(data, {
+    updateProductMutation.mutate(data, {
       onSuccess: () => {
         console.log("Todo added successfully!");
         utils.invalidate(undefined, { queryKey: getQueryKey(trpc.getProduct) });
@@ -49,10 +65,10 @@ export default function DashUpload() {
   let imageId: string = "";
 
   const { register, handleSubmit, reset } = useForm({
-    defaultValues: {
-      title: "",
-      description: "",
-      tags: "",
+    values: {
+      title: product.title,
+      description: product.description,
+      tags: product.tags?.toString(),
     },
   });
   const [open, setOpen] = useState(false);
@@ -92,43 +108,44 @@ export default function DashUpload() {
     };
 
     const arr: string[] = [];
-    imageState.forEach((element) => {
+    imageState?.forEach((element) => {
       if (element) {
         arr.push(element);
       }
     });
 
     const data = {
-      ...transformedValues,
-      created_at: new Date(),
-      image: arr,
-      rating: 4,
-      date: "6/4/08",
-      author: "abbas",
+      id,
+      data: { ...transformedValues, image: imageState },
     };
 
     console.log(data);
 
-    if (arr.length === 0) {
+    if (/* arr.length === 0 */ false) {
       alert("you need at least one picture");
     } else {
       handleAddTodo(data);
-      setImageState([]);
+
       reset();
       setOpen(false);
     }
   };
 
   return (
-    <div className=" py-[5%] px-[5%] ">
+    <div
+      className="w-full h-full "
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+    >
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <button className="w-[150px] h-[150px] flex justify-center items-center  bg-gray-800 bg-opacity-50  text-gray-400 rounded-md">
-            <div>
-              <p>Add Product </p>
-              <p>+</p>
+          <div className=" w-full h-full flex p-2">
+            <div className="w-4 h-4 ">
+              <Image src="/editing.png" alt="" height={128} width={128}></Image>
             </div>
-          </button>
+            <p>Edit</p>
+          </div>
         </DialogTrigger>
         <DialogContent className="max-w-md w-full border-0 p-6 bg-gray-900 bg-opacity-95 text-gray-400 rounded-lg shadow-md">
           <DialogTitle>Upload Product</DialogTitle>
@@ -139,6 +156,7 @@ export default function DashUpload() {
             className="space-y-4 "
           >
             <div>
+              {JSON.stringify(imageState)}
               <ImageUpload onChange={uploadFile} id="0"></ImageUpload>
               <ImageUpload onChange={uploadFile} id="1"></ImageUpload>
               <ImageUpload onChange={uploadFile} id="2"></ImageUpload>
@@ -151,7 +169,7 @@ export default function DashUpload() {
               </label>
               <input
                 type="text"
-                {...register("title", { required: true })}
+                {...register("title", { required: false })}
                 className="mt-1 block w-full border border-gray-800 rounded-md bg-transparent py-1"
               />
             </div>
@@ -161,7 +179,7 @@ export default function DashUpload() {
                 Description
               </label>
               <textarea
-                {...register("description", { required: true })}
+                {...register("description", { required: false })}
                 className="mt-1 block w-full border rounded-md bg-transparent border-gray-800"
               ></textarea>
             </div>

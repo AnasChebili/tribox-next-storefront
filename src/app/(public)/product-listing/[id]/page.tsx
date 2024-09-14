@@ -16,14 +16,14 @@ export default function ProductListing({params}:{params:{id:string}}) {
   const  data = productObj.data;
   console.log(data, isLoading);
   const product: {
-    image:string
+    image:string[]
     rating: string;
     title: string;
     date: string;
     author: string;
     tags: Array<string>;
     description: string;
-  } = data ? data[0] : recs1[0]
+  } = data? data[0] : {}
   const prod:{
     formats: string[],
     ID: string,
@@ -33,10 +33,14 @@ export default function ProductListing({params}:{params:{id:string}}) {
     ID:"13fiomoasfj-11ad",
     softwares:["/blender.png", "/ps.png"]
   }
-  const images : string[] = [/* product.image, */"/carousel2.png","/carousel3.png","/carousel4.png",]
+  const images : string[] = product?.image
   return (
+
     <div className="mb-28">
-      <div>{JSON.stringify(data)}</div>
+      {
+        data &&
+        <div>
+        <div>{JSON.stringify(data)}</div>
       <div className="mx-[5%] mt-20">
       <div className="flex   space-x-4 items-center">
         <div className=" shadow cursor-pointer shadow-white w-9 h-9 rounded-full bg-white flex items-center">
@@ -80,6 +84,9 @@ export default function ProductListing({params}:{params:{id:string}}) {
         </p>
       </div>
       <Recommendations categs={recs1}></Recommendations>
+      </div>
+      }
+      
     </div>
   );
 }

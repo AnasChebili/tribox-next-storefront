@@ -34,12 +34,11 @@ export const registerFormSchema = z
 export type RegisterForm = z.infer<typeof registerFormSchema>;
 
 export default function Home() {
-  const [emailMessage, setEmailMessage]=useState(false)
+  const [emailMessage, setEmailMessage] = useState(false);
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
     register,
-
   } = useForm({
     values: {
       email: "",
@@ -50,13 +49,18 @@ export default function Home() {
     resolver: zodResolver(registerFormSchema),
   });
 
-  const isDisabled = Boolean(errors.password || errors.email || errors.confirmPassword);
+  const isDisabled = Boolean(
+    errors.password || errors.email || errors.confirmPassword
+  );
   return (
     <form
       onSubmit={handleSubmit(async (values) => {
         const result = await signup(values);
         if (result?.error) toast.error(result.error);
-        else if (result?.data) {toast.success(result.data);setEmailMessage(true)};
+        else if (result?.data) {
+          toast.success(result.data);
+          setEmailMessage(true);
+        }
       })}
       className="my-[30%] w-[50%] mx-auto"
     >
@@ -71,7 +75,8 @@ export default function Home() {
       <div className="mt-10 mb-10">
         <h1 className="font-bold text-4xl font-serif">Welcome To Di-Box</h1>
         <p className="text-xs w-2/3 mt-2">
-        Just need a little bit of your information and I’ll give you your very own account!
+          Just need a little bit of your information and I’ll give you your very
+          own account!
         </p>
       </div>
       <div>
@@ -149,27 +154,32 @@ export default function Home() {
             {errors.confirmPassword.message}
           </p>
         )}
-        
-        {emailMessage && <div className="mt-10">
-        <h1 className="font-bold text-4xl font-serif">We sent you a confirmation Email!</h1>
-        <p className="text-xs w-2/3 mt-2">
-        Check your email inbox and click on the confirmation link to complete your sign up!
-        </p>
-      </div>}
+
+        {emailMessage && (
+          <div className="mt-10">
+            <h1 className="font-bold text-4xl font-serif">
+              We sent you a confirmation Email!
+            </h1>
+            <p className="text-xs w-2/3 mt-2">
+              Check your email inbox and click on the confirmation link to
+              complete your sign up!
+            </p>
+          </div>
+        )}
 
         <button
           disabled={isDisabled || isSubmitting}
           type="submit"
-          className={cn("w-full text-white bg-black mt-8 py-3 rounded-md flex justify-center gap-3 items-center",{"opacity-50":isDisabled || isSubmitting})}
+          className={cn(
+            "w-full text-white bg-black mt-8 py-3 rounded-md flex justify-center gap-3 items-center",
+            { "opacity-50": isDisabled || isSubmitting, hidden: emailMessage }
+          )}
         >
-          {
-            isSubmitting && <Spinner className="w-5 h-5 text-white"></Spinner>
-          }
-          Sign up 
+          {isSubmitting && <Spinner className="w-5 h-5 text-white"></Spinner>}
+          Sign up
         </button>
         {/* <button formAction={signup}>Sign up</button> */}
       </div>
-      
     </form>
   );
 }

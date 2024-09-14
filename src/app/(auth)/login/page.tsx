@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
 
 export const loginFormSchema = z.object({
   email: z
@@ -21,6 +22,7 @@ export const loginFormSchema = z.object({
 export type LoginForm = z.infer<typeof loginFormSchema>;
 
 export default function LoginPage() {
+  const router = useRouter();
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
@@ -41,7 +43,10 @@ export default function LoginPage() {
       onSubmit={handleSubmit(async (values) => {
         const result = await login(values);
         if (result?.error) toast.error(result.error);
-        else if (result?.data) toast.success(result.data);
+        else if (result?.data) {
+          toast.success(result.data);
+          router.push("/");
+        }
       })}
       className="my-[30%] w-[50%] mx-auto"
     >

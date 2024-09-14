@@ -4,6 +4,7 @@ import recs1 from "../data/reccomendations.json";
 import Recommendations, { categstype } from "./recommendations";
 import { trpc } from "@/app/_trpc/client";
 import Recskeleton from "./recskeleton";
+import EditCards from "./editcards";
 
 export default function DashProducts() {
   const products = trpc.getTodos.useQuery();
@@ -21,7 +22,7 @@ export default function DashProducts() {
         </p>
       </div>
       {recs3 ? (
-        <Recommendations categs={recs3}></Recommendations>
+        <EditCards categs={recs3}></EditCards>
       ) : (
         <Recskeleton></Recskeleton>
       )}
