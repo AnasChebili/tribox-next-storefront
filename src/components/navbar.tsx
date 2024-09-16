@@ -1,15 +1,12 @@
-"use client";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import Image from "next/image";
+import Link from "next/link";
 import NavSign from "./ui/navsign";
 export default function Navbar() {
   return (

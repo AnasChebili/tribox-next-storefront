@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import RecCard from "./ui/reccard";
-import WorkCard from "./ui/workcard";
 import Recskeleton from "./recskeleton";
+import { RouterOutput } from "@/server";
 
 export type categtype = {
   id: UUID;
@@ -19,7 +19,11 @@ export type categstype = {
   categs: categtype[];
 };
 
-export default function Recommendations({ categs }: categstype) {
+export default function Recommendations({
+  categs,
+}: {
+  categs: RouterOutput["getTodos"];
+}) {
   return (
     <div>
       {!categs ? (

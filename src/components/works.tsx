@@ -3,6 +3,7 @@ import { trpc } from "@/app/_trpc/client";
 import WorkCard from "./ui/workcard";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import Categories from "./categories";
 
 const FilterSelect = ({
   title,
@@ -124,6 +125,7 @@ export default function Works({
   const works = worksObj.data; */
 
   const [filter, setFilter] = useState(initialFilter);
+  console.log("filter", filter);
 
   const { data: works } = trpc.filterByTag.useQuery(filter);
 
@@ -175,8 +177,8 @@ export default function Works({
               author={work.author}
               tags={work.tags}
               description={work.description}
-              id={index}
-              key={index}
+              id={work.id}
+              key={work.id}
             ></WorkCard>
           ))}
       </div>

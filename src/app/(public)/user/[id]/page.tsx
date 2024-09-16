@@ -1,13 +1,9 @@
-"use client";
-
-import { trpc } from "@/app/_trpc/client";
 import Works from "@/components/works";
+import { trpcServer } from "@/server/trpc";
 import Image from "next/image";
 
-export default function User({ params }: { params: { id: string } }) {
-  const userObj = trpc.getUser.useQuery(params.id);
-  const userdata = userObj.data;
-  console.log(userdata);
+export default async function User({ params }: { params: { id: string } }) {
+  const userdata = await trpcServer.getUser.query(params.id);
   const user: {
     username: string;
     email: string;
@@ -17,10 +13,8 @@ export default function User({ params }: { params: { id: string } }) {
   } = userdata ? userdata[0] : {};
   console.log(user.image);
 
-  const imgObj = trpc.getImage.useQuery(user.image, {
-    enabled: !!user,
-  });
-  const imgUrl = imgObj.data;
+  const imgUrl = await trpcServer.getImage.query(user.image);
+
   console.log(imgUrl);
   return (
     <div className=" text-white  px-[5%] mt-20">

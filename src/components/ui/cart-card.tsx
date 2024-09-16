@@ -1,11 +1,11 @@
-"use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { createClient } from "../../../utils/supabase/client";
 import { Skeleton } from "./skeleton";
+import { toast } from "sonner";
+import { RouterOutput } from "@/server";
+import { MouseEventHandler } from "react";
 
-export default function RecCard({
+export default function CartCard({
   image,
   rating,
   title,
@@ -14,6 +14,7 @@ export default function RecCard({
   tags,
   description,
   id,
+  removeCard,
 }: {
   image: string;
   rating: number;
@@ -23,44 +24,28 @@ export default function RecCard({
   tags: Array<string>;
   description: string;
   id: string;
+  removeCard: () => void;
 }) {
-  /* const supabase = createClient();
-
-  const [imgUrl, setImgUrl] = useState<string | null>();
-
-  useEffect(() => {
-    async function downloadImage(path: string) {
-      try {
-        console.log(path);
-
-        const { data, error } = await supabase.storage
-          .from("documents")
-          .download(path);
-        console.log("data:", data);
-
-        if (error) {
-          throw error;
-        }
-
-        const url = URL.createObjectURL(data);
-        console.log("url:", url);
-
-        setImgUrl(url);
-        console.log("imgurl:", imgUrl);
-      } catch (error) {
-        console.log("Error downloading image: ", error);
-      }
-    }
-    console.log("a");
-
-    downloadImage(image);
-    console.log(imgUrl);
-  }, []); */
-
   return (
     <div className="cursor-pointer">
       <Link href={`/product-listing/${id}`}>
-        <div className="h-[225px] overflow-hidden">
+        <div className="h-[225px] overflow-hidden relative">
+          <div
+            className="absolute right-2 top-2 z-10 bg-black p-[6px] rounded-full"
+            onClick={(e) => {
+              removeCard(id);
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          >
+            <Image
+              src="/trash-bin.png"
+              alt=""
+              height={15}
+              width={15}
+              className="z-0"
+            ></Image>
+          </div>
           {image ? (
             <Image
               src={image}

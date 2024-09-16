@@ -4,44 +4,12 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import Recskeleton from "./recskeleton";
 import { createClient } from "../../utils/supabase/client";
+import { trpc } from "@/app/_trpc/client";
 
 export default function Carousel({ images }: { images: string[] }) {
-  console.log(images);
-
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const supabase = createClient();
-
-  const [transforemdImages, setTransformedImages] = useState<string[]>([]);
-
-  useEffect(() => {
-    async function downloadImage(path: string) {
-      try {
-        const { data, error } = await supabase.storage
-          .from("documents")
-          .download(path);
-        console.log("data:", data);
-
-        if (error) {
-          throw error;
-        }
-
-        const url = URL.createObjectURL(data);
-        return url;
-      } catch (error) {
-        console.log("Error downloading image: ", error);
-      }
-    }
-
-    async function fetchImages() {
-      const urls = await Promise.all(
-        images.map((image) => downloadImage(image))
-      );
-      setTransformedImages(urls.filter(Boolean) as string[]);
-    }
-
-    fetchImages();
-  }, [images]);
 
   const handlePrevClick = () => {
     setCurrentIndex((prevIndex) =>
@@ -56,17 +24,16 @@ export default function Carousel({ images }: { images: string[] }) {
 
   return (
     <div className="cursor-pointer">
-      {!transforemdImages ? (
+      {!images ? (
         <Recskeleton></Recskeleton>
       ) : (
         <div>
-          {JSON.stringify(transforemdImages)}
           <div className="relative w-full ">
             <div className="relative z-0">
               {
                 <div className="h-[50vw] w-full  flex justify-center items-center ">
                   <Image
-                    src={transforemdImages[currentIndex]}
+                    src={images[currentIndex]}
                     alt=""
                     fill
                     className="object-cover"
@@ -101,7 +68,7 @@ export default function Carousel({ images }: { images: string[] }) {
             </div>
           </div>
           <div className="grid grid-cols-7">
-            {transforemdImages.map((image, index) => (
+            {images.map((image, index) => (
               <div
                 key={index}
                 onClick={() => {

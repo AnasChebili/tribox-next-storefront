@@ -68,7 +68,7 @@ export default function Settings() {
             opened={opened}
             authId={authUser?.id}
             id={user.id}
-            image={user.image}
+            image={imgUrl}
             username={user.username}
             email={authUser?.email}
             name={user.name}
@@ -86,7 +86,7 @@ export default function Settings() {
             alt=""
             width={100}
             height={100}
-            className="cursor-pointer"
+            className="cursor-pointer rounded-full"
           />
         </div>
         <p>Username: {user.username}</p>

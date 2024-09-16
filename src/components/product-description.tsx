@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Payment from "./payment";
 
 export default function ProductDescription({
+  addToCart,
   rating,
   title,
   date,
@@ -9,7 +9,8 @@ export default function ProductDescription({
   tags,
   description,
 }: {
-  rating: string;
+  addToCart: () => void;
+  rating: number;
   title: string;
   date: string;
   author: string;
@@ -56,9 +57,16 @@ export default function ProductDescription({
         <button className=" text-black w-full py-5 rounded-lg bg-white mt-6   font-bold text-xl">
           Download for free
         </button>
-        <button className="w-full py-5 rounded-md bg-gradient-to-r from-red-400 to-white mt-6 text-xl  font-bold ">
-          Buy now for $30
-        </button>
+        <div className="w-full flex items-center h-[68px] mt-6">
+          <button className="basis-5/6 h-full rounded-md bg-gradient-to-r from-red-400 to-white text-xl  font-bold ">
+            Buy now for $30
+          </button>
+          <button className="basis-1/6 flex items-center justify-center h-full">
+            <div onClick={addToCart}>
+              <Image src="/cart.svg" alt="" width={50} height={50}></Image>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, ReactEventHandler, useState } from "react";
+import { ChangeEvent, ReactEventHandler, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -49,6 +49,10 @@ export default function UserDialog({
   bio: string;
 }) {
   const [imageState, setImageState] = useState<string>(image);
+
+  useEffect(() => {
+    setImageState(image);
+  }, [image]);
 
   const updateUserMutation = trpc.updateUser.useMutation();
   const utils = trpc.useUtils();
@@ -115,7 +119,14 @@ export default function UserDialog({
 
     const bucket = "documents";
 
-    setImageState(imageId);
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      setImageState(base64String);
+    };
+
+    reader.readAsDataURL(file);
 
     const { data, error } = await supabase.storage
       .from(bucket)
@@ -164,8 +175,16 @@ export default function UserDialog({
             })}
             className="space-y-4 "
           >
-            <div>
-              {JSON.stringify(imageState)}
+            {JSON.stringify(imageState)}
+            <div className="flex gap-4 items-center">
+              <Image
+                src={imageState}
+                alt=""
+                height={50}
+                width={50}
+                className="rounded-full"
+              ></Image>
+
               <ImageUpload onChange={uploadFile} id="0"></ImageUpload>
             </div>
 

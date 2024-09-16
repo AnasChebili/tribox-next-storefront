@@ -1,8 +1,6 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { createClient } from "../../../utils/supabase/client";
 import { Skeleton } from "./skeleton";
 import EditDrop from "../edit-drop";
 import { UUID } from "crypto";
@@ -26,39 +24,6 @@ export default function EditCard({
   description: string;
   id: UUID;
 }) {
-  const supabase = createClient();
-
-  const [imgUrl, setImgUrl] = useState<string | null>();
-
-  useEffect(() => {
-    async function downloadImage(path: string) {
-      try {
-        console.log(path);
-
-        const { data, error } = await supabase.storage
-          .from("documents")
-          .download(path);
-        console.log("data:", data);
-
-        if (error) {
-          throw error;
-        }
-
-        const url = URL.createObjectURL(data);
-        console.log("url:", url);
-
-        setImgUrl(url);
-        console.log("imgurl:", imgUrl);
-      } catch (error) {
-        console.log("Error downloading image: ", error);
-      }
-    }
-    console.log("a");
-
-    downloadImage(image);
-    console.log(imgUrl);
-  }, []);
-
   return (
     <div className="cursor-pointer">
       <Link href={`/product-listing/${id}`}>
@@ -71,9 +36,9 @@ export default function EditCard({
               tags={tags}
             ></EditDrop>
           </div>
-          {imgUrl ? (
+          {image ? (
             <Image
-              src={imgUrl}
+              src={image}
               alt=""
               width={400}
               height={350}

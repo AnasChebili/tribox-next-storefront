@@ -1,10 +1,9 @@
-"use client";
-import { trpc } from "@/app/_trpc/client";
+import { trpcServer } from "@/server/trpc";
 import { UUID } from "crypto";
 import Image from "next/image";
 import Link from "next/link";
 
-const CollabCard = ({
+const CollabCard = async ({
   id,
   image,
   num,
@@ -15,7 +14,7 @@ const CollabCard = ({
   num: string;
   stats: string;
 }) => {
-  const { data: imgUrl } = trpc.getImage.useQuery(image);
+  const imgUrl = await trpcServer.getImage.query(image);
   return (
     <div className="min-w-80 cursor-pointer">
       <Link href={`/user/${id}`}>
@@ -33,7 +32,7 @@ const CollabCard = ({
   );
 };
 
-export default function Collaborations() {
+export default async function Collaborations() {
   /* const collabs: Array<{ image: string; num: string; stats: string }> = [
     { image: "/collab1.png", num: "100,000", stats: "Stats" },
     { image: "/collab2.png", num: "100,000", stats: "Stats" },
@@ -43,7 +42,7 @@ export default function Collaborations() {
     
   ]; */
 
-  const { data: collabs } = trpc.getUsers.useQuery();
+  const collabs = await trpcServer.getUsers.query();
 
   return (
     <div className=" ml-[5%] flex overflow-x-auto space-x-8 no-scrollbar">

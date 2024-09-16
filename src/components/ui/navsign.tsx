@@ -1,11 +1,26 @@
 import { trpc } from "@/app/_trpc/client";
+import { trpcServer } from "@/server/trpc";
 import Image from "next/image";
 import Link from "next/link";
+import { useMemo } from "react";
 
-export default function NavSign() {
-  const { data: authUser } = trpc.getAuthUser.useQuery();
+export default async function NavSign() {
+  // const { data: authUser, isError } = trpc.getAuthUser.useQuery();
+
+  // const signedIn = useMemo(() => {
+  //   const noAuthUser = !Boolean(authUser);
+  //   const authSessionMissing = noAuthUser
+  //     ? true
+  //     : // @ts-expect-error
+  //       authUser?.name === "AuthSessionMissingError";
+  //   return !noAuthUser && !authSessionMissing && !isError;
+  // }, [authUser, isError]);
   let signedIn = true;
-  if (authUser && authUser.name === "AuthSessionMissingError") {
+  try {
+    const authUser = await trpcServer.getAuthUser.query();
+    // @ts-expect-error
+    signedIn = authUser?.name !== "AuthSessionMissingError";
+  } catch (error) {
     signedIn = false;
   }
 

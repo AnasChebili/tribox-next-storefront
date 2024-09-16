@@ -5,6 +5,7 @@ import Image from "next/image";
 import SidePanel from "@/components/sidepanel";
 import Works from "@/components/works";
 import { trpc } from "@/app/_trpc/client";
+import { publicProcedure, t } from "@/server/trpc";
 
 export default function PrivatePage() {
   const auth = trpc.getAuthUser.useQuery();

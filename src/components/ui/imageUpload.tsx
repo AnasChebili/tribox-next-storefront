@@ -5,13 +5,11 @@ export default function ImageUpload({
   id,
 }: {
   onChange: ChangeEventHandler<HTMLInputElement>;
-  id: string
+  id: string;
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700">
-        Product Image
-      </label>
+      <label className="block text-sm font-medium text-gray-700">Image</label>
       <input
         type="file"
         id={id}

@@ -1,6 +1,7 @@
 import { createClient } from "../../utils/supabase/server";
-import { publicProcedure, router } from "./trpc";
+import { publicProcedure, router, trpcServer } from "./trpc";
 import { z } from "zod";
+import { inferRouterInputs, inferRouterOutputs, TRPCError } from "@trpc/server";
 
 const todoSchema = z.object({
   created_at: z.coerce.date(),
@@ -46,10 +47,21 @@ const UserAddSchema = z.object({
 export const appRouter = router({
   getTodos: publicProcedure.query(async () => {
     const supabase = createClient();
-    const { data: products } = await supabase.from("products").select();
-    console.log("data");
+    const { data: products, error } = await supabase.from("products").select();
 
-    console.log(products);
+    if (!products || error) {
+      throw error;
+    }
+
+    const promises = products.map(async (product, index) => {
+      const promises = (product.image as string[]).map((supabaseImageUrl) =>
+        trpcServer.getImage.query(supabaseImageUrl)
+      );
+      product.image = await Promise.all(promises);
+      return product;
+    });
+    const transformedProducts = await Promise.all(promises);
+    console.log("products", transformedProducts);
 
     return products;
   }),
@@ -57,7 +69,7 @@ export const appRouter = router({
     const supabase = createClient();
     const { error } = await supabase.from("products").insert([
       {
-        created_at: input.created_at,
+        created_at: input.created_at.toString(),
         image: input.image,
         rating: input.rating,
         title: input.title,
@@ -81,13 +93,25 @@ export const appRouter = router({
       console.log(input);
 
       const supabase = createClient();
-      const { data: product } = await supabase
+      const { data: products, error } = await supabase
         .from("products")
         .select()
         .eq("id", input);
-      console.log("data");
 
-      console.log(product);
+      if (!products || error) throw error;
+
+      if (products.length <= 0)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        });
+
+      const product = products[0];
+      console.log("product", product);
+
+      const promises = (product.image as string[]).map((supabaseImageUrl) =>
+        trpcServer.getImage.query(supabaseImageUrl)
+      );
+      product.image = await Promise.all(promises);
 
       return product;
     }),
@@ -124,7 +148,7 @@ export const appRouter = router({
 
     const { data, error } = await supabase.auth.getUser();
     if (error || !data?.user) {
-      return error;
+      throw error;
     }
     console.log(data.user);
     return data.user;
@@ -132,13 +156,7 @@ export const appRouter = router({
   getImage: publicProcedure.input(z.string()).query(async ({ input }) => {
     const supabase = createClient();
 
-    const { data, error } = await supabase.storage
-      .from("documents")
-      .getPublicUrl(input);
-    if (error) {
-      console.log("Error getting public URL: ", error);
-    }
-    console.log(data.publicUrl);
+    const { data } = supabase.storage.from("documents").getPublicUrl(input);
 
     return data.publicUrl;
   }),
@@ -188,3 +206,6 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
+
+export type RouterOutput = inferRouterOutputs<AppRouter>;
+export type RouterInput = inferRouterInputs<AppRouter>;
