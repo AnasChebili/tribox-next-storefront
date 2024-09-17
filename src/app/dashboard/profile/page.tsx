@@ -1,40 +1,21 @@
-"use client";
 import { redirect, useRouter } from "next/navigation";
 import { logout } from "@/app/(auth)/logout/actions";
 import Image from "next/image";
 import SidePanel from "@/components/sidepanel";
 import Works from "@/components/works";
 import { trpc } from "@/app/_trpc/client";
-import { publicProcedure, t } from "@/server/trpc";
+import { publicProcedure, t, trpcServer } from "@/server/trpc";
 
-export default function PrivatePage() {
-  const auth = trpc.getAuthUser.useQuery();
-  const authUser = auth?.data;
+export default async function PrivatePage() {
+  const authUser = await trpcServer.getAuthUser.query();
 
-  const router = useRouter();
+  const user = await trpcServer.getUser.query(authUser.user.id);
 
-  if (authUser && authUser.name === "AuthSessionMissingError") {
-    router.push("/login");
+  if (!user) {
+    redirect("/login");
   }
 
-  const userObj = trpc.getUser.useQuery(authUser?.id, {
-    enabled: !!authUser,
-  });
-  const userdata = userObj.data;
-  const user: {
-    username: string;
-    email: string;
-    name: string;
-    image: string;
-    bio: string;
-  } = userdata ? userdata[0] : {};
-  console.log(user.image);
-
-  const imgObj = trpc.getImage.useQuery(user.image, {
-    enabled: !!user,
-  });
-  const imgUrl = imgObj.data;
-  console.log(imgUrl);
+  const imgUrl = await trpcServer.getImage.query(user.image);
 
   return (
     <div className=" text-white  px-14">

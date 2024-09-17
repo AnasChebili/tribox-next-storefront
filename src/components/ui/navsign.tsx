@@ -5,16 +5,17 @@ import Link from "next/link";
 import { useMemo } from "react";
 
 export default async function NavSign() {
-  // const { data: authUser, isError } = trpc.getAuthUser.useQuery();
+  /*   const { data: authUser, isError } = trpc.getAuthUser.useQuery();
 
-  // const signedIn = useMemo(() => {
-  //   const noAuthUser = !Boolean(authUser);
-  //   const authSessionMissing = noAuthUser
-  //     ? true
-  //     : // @ts-expect-error
-  //       authUser?.name === "AuthSessionMissingError";
-  //   return !noAuthUser && !authSessionMissing && !isError;
-  // }, [authUser, isError]);
+  const signedIn = useMemo(() => {
+    const noAuthUser = !Boolean(authUser);
+    const authSessionMissing = noAuthUser
+      ? true
+      : // @ts-expect-error
+        authUser?.name === "AuthSessionMissingError";
+
+    return !noAuthUser && !authSessionMissing && !isError;
+  }, [authUser, isError]); */
 
   let signedIn = true;
   try {
@@ -23,6 +24,8 @@ export default async function NavSign() {
     // @ts-expect-error
     signedIn = authUser?.name !== "AuthSessionMissingError";
   } catch (error) {
+    console.log("error========================", error);
+
     signedIn = false;
   }
 

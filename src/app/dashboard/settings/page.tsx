@@ -3,61 +3,31 @@ import { trpc } from "@/app/_trpc/client";
 import UserDialog from "@/components/user-dialog";
 import Image from "next/image";
 import { useRouter } from "next/navigation"; // Use next/navigation for client-side navigation
+import { toast } from "sonner";
 
 export default function Settings() {
   const router = useRouter();
-  const auth = trpc.getAuthUser.useQuery();
-  const authUser = auth?.data;
-
-  if (authUser && authUser.name === "AuthSessionMissingError") {
-    router.push("/login");
-  }
-
-  const userObj = trpc.getUser.useQuery(authUser?.id, {
+  const { data: authUser } = trpc.getAuthUser.useQuery();
+  //auth user will be predefined in rsc
+  const { data: user } = trpc.getUser.useQuery(authUser!.user.id, {
     enabled: !!authUser,
   });
-  console.log(userObj);
-  const userdata = userObj.data;
-  console.log(userdata);
-
-  const addUserMutation = trpc.addUser.useMutation();
 
   let opened = false;
 
-  if (!userObj.isLoading && userdata?.length === 0) {
-    opened = true;
-    console.log(opened);
-
-    /* addUserMutation.mutate(); */
-  }
-
-  const user: {
-    username: string;
-    email: string;
-    name: string;
-    image: string;
-    bio: string;
-  } = userdata && userdata.length > 0 ? userdata[0] : {};
-
-  console.log(user);
-
-  const imgObj = trpc.getImage.useQuery(user.image, {
-    enabled: !!user.image,
+  const { data: imgUrl } = trpc.getImage.useQuery(user?.image!, {
+    enabled: !!user?.image,
   });
-  const imgUrl = imgObj.data;
 
-  const logoutMutation = trpc.logout.useMutation();
-
-  const logout = async () => {
-    try {
-      await logoutMutation.mutateAsync();
-      console.log("Logout successful");
-      router.push("/login"); // Redirect to login page using next/navigation
-    } catch (error) {
-      console.error("Logout failed:", error.message);
-      alert("Failed to log out");
-    }
-  };
+  const logoutMutation = trpc.logout.useMutation({
+    onSuccess: (data) => {
+      router.push("/login");
+    },
+    onError: (error) => {
+      // alert("Failed to log out");
+      toast.error("Failed to log out");
+    },
+  });
 
   return (
     <div className="text-white px-14">
@@ -102,7 +72,7 @@ export default function Settings() {
       <div className="w-full h-[1px] bg-white"></div>
       <div className="my-11">
         <button
-          onClick={logout}
+          onClick={() => logoutMutation.mutate()}
           className="px-6 py-3 rounded-lg bg-red-900 hover:bg-red-600"
         >
           Log out

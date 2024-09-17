@@ -8,7 +8,6 @@ import { appRouter, RouterOutput } from "@/server";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { ProductListingPage } from "./ProductListingPage";
 import { dehydrate, Hydrate } from "@tanstack/react-query";
-import { GraphHelpers } from "next/dist/compiled/webpack/webpack";
 
 export default async function ProductListing({
   params,

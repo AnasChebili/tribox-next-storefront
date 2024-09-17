@@ -1,5 +1,11 @@
 import { createClient } from "../../utils/supabase/server";
-import { privateProcedure, publicProcedure, router, trpcServer } from "./trpc";
+import {
+  adminProcedure,
+  privateProcedure,
+  publicProcedure,
+  router,
+  trpcServer,
+} from "./trpc";
 import { z } from "zod";
 import { inferRouterInputs, inferRouterOutputs, TRPCError } from "@trpc/server";
 import { cookies } from "next/headers";
@@ -138,13 +144,19 @@ export const appRouter = router({
       .from("users")
       .select()
       .eq("id", input);
-    console.log("user");
 
-    console.log(user);
+    if (!user || user.length <= 0) return undefined;
 
-    return user;
+    return user[0];
   }),
-  getAuthUser: privateProcedure.query(async ({ ctx }) => ctx),
+  // getAuthUser: privateProcedure.query(async ({ ctx }) => ctx),
+  getAuthUser: adminProcedure.query(async ({ ctx }) => {
+    // Access the validated user from ctx
+    const user = ctx.user;
+
+    // Perform some admin task
+    return { success: true, user };
+  }),
   getImage: publicProcedure.input(z.string()).query(async ({ input }) => {
     const supabase = createClient();
 
