@@ -15,9 +15,11 @@ export default async function NavSign() {
   //       authUser?.name === "AuthSessionMissingError";
   //   return !noAuthUser && !authSessionMissing && !isError;
   // }, [authUser, isError]);
+
   let signedIn = true;
   try {
     const authUser = await trpcServer.getAuthUser.query();
+
     // @ts-expect-error
     signedIn = authUser?.name !== "AuthSessionMissingError";
   } catch (error) {

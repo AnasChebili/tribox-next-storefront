@@ -3,6 +3,7 @@
 import CheckoutPage from "@/components/check-out-page";
 import convertToSubcurrency from "@/lib/convertToSubcurrency";
 import Providers from "@/store/providers";
+import { RootState } from "@/store/store";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useSelector } from "react-redux";
@@ -14,10 +15,7 @@ if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
 export default function Payment() {
-  const selector = useSelector((state) => state.cart.totalAmount);
-  console.log(selector);
-
-  const amount = useSelector((state) => state.cart.totalAmount);
+  const amount = useSelector((state: RootState) => state.cart.totalAmount);
 
   return (
     <div className="flex items-center h-screen ">

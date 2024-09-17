@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
+import { setCookie } from "cookies-next";
 
 export const loginFormSchema = z.object({
   email: z
@@ -44,7 +45,8 @@ export default function LoginPage() {
         const result = await login(values);
         if (result?.error) toast.error(result.error);
         else if (result?.data) {
-          toast.success(result.data);
+          toast.success(result.data.message);
+          setCookie("authSession", result.data.session);
           router.push("/");
         }
       })}

@@ -1,11 +1,16 @@
+/* eslint-disable react/no-unescaped-entities */
 import Categories from "@/components/categories";
 import Morning from "@/components/morning";
 import Recommendations from "@/components/recommendations";
 import Image from "next/image";
 import { trpcServer } from "@/server/trpc";
+import { createClient } from "../../../../utils/supabase/server";
+import { cookies } from "next/headers";
 
 export default async function StoreAuth() {
+  const supabase = createClient();
   const products = await trpcServer.getTodos.query();
+  // console.log("==================================", cookies().getAll());
 
   return (
     <div className="mb-28">

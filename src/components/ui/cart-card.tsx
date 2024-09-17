@@ -24,7 +24,7 @@ export default function CartCard({
   tags: Array<string>;
   description: string;
   id: string;
-  removeCard: () => void;
+  removeCard: (id: string) => void;
 }) {
   return (
     <div className="cursor-pointer">

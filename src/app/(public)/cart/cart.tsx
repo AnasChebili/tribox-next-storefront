@@ -5,16 +5,23 @@ import CartCards from "@/components/cart-cards";
 import { RouterOutput } from "@/server";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import { setTotalAmount } from "../../../store/cartSlice";
+import {
+  addAlltoCart,
+  addItemToCart,
+  setTotalAmount,
+} from "../../../store/cartSlice";
 import { useRouter } from "next/navigation";
+import { RootState } from "@/store/store";
+import { trpc } from "@/app/_trpc/client";
 
 type productType = Database["public"]["Tables"]["products"]["Row"];
 
 const Cart = () => {
+  const { data: authUser } = trpc.getAuthUser.useQuery();
   const [cartItems, setCartItems] = useState(() => {
     return JSON.parse(localStorage.getItem("cart") || "[]");
   });
-  const selector = useSelector((state) => state.cart.totalAmount);
+  const selector = useSelector((state: RootState) => state.cart.totalAmount);
   const [total, setTotal] = useState(selector);
 
   useEffect(() => {
@@ -48,8 +55,15 @@ const Cart = () => {
   const router = useRouter();
 
   const checkOut = () => {
-    dispatch(setTotalAmount(total));
-    router.push("/payment");
+    if (authUser) {
+      dispatch(setTotalAmount(total));
+      dispatch(addAlltoCart(cartItems));
+      router.push("/payment");
+    } else {
+      console.log(authUser);
+
+      router.push("/login");
+    }
   };
 
   return (

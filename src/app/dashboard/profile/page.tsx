@@ -21,7 +21,6 @@ export default function PrivatePage() {
     enabled: !!authUser,
   });
   const userdata = userObj.data;
-  console.log(userdata);
   const user: {
     username: string;
     email: string;

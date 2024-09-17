@@ -1,7 +1,8 @@
 import { createClient } from "../../utils/supabase/server";
-import { publicProcedure, router, trpcServer } from "./trpc";
+import { privateProcedure, publicProcedure, router, trpcServer } from "./trpc";
 import { z } from "zod";
 import { inferRouterInputs, inferRouterOutputs, TRPCError } from "@trpc/server";
+import { cookies } from "next/headers";
 
 const todoSchema = z.object({
   created_at: z.coerce.date(),
@@ -45,7 +46,7 @@ const UserAddSchema = z.object({
 });
 
 export const appRouter = router({
-  getTodos: publicProcedure.query(async () => {
+  getTodos: privateProcedure.query(async ({ ctx }) => {
     const supabase = createClient();
     const { data: products, error } = await supabase.from("products").select();
 
@@ -61,7 +62,6 @@ export const appRouter = router({
       return product;
     });
     const transformedProducts = await Promise.all(promises);
-    console.log("products", transformedProducts);
 
     return products;
   }),
@@ -70,6 +70,7 @@ export const appRouter = router({
     const { error } = await supabase.from("products").insert([
       {
         created_at: input.created_at.toString(),
+        price: 0,
         image: input.image,
         rating: input.rating,
         title: input.title,
@@ -143,16 +144,7 @@ export const appRouter = router({
 
     return user;
   }),
-  getAuthUser: publicProcedure.query(async () => {
-    const supabase = createClient();
-
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data?.user) {
-      throw error;
-    }
-    console.log(data.user);
-    return data.user;
-  }),
+  getAuthUser: privateProcedure.query(async ({ ctx }) => ctx),
   getImage: publicProcedure.input(z.string()).query(async ({ input }) => {
     const supabase = createClient();
 

@@ -11,11 +11,9 @@ export default async function User({ params }: { params: { id: string } }) {
     image: string;
     bio: string;
   } = userdata ? userdata[0] : {};
-  console.log(user.image);
 
   const imgUrl = await trpcServer.getImage.query(user.image);
 
-  console.log(imgUrl);
   return (
     <div className=" text-white  px-[5%] mt-20">
       <div className="w-full flex justify-between">

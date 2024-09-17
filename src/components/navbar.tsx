@@ -28,18 +28,20 @@ export default function Navbar() {
             height={50}
             className="cursor-pointer"
           ></Image>
-          <div className="Cart flex">
-            <div className="h-[50px] w-[70px] bg-black rounded-3xl leading-[48px] align-middle text-center cursor-pointer">
-              Cart
+          <Link href="/cart">
+            <div className="Cart flex">
+              <div className="h-[50px] w-[70px] bg-black rounded-3xl leading-[48px] align-middle text-center cursor-pointer">
+                Cart
+              </div>
+              <Image
+                src="/cart.svg"
+                alt=""
+                width={50}
+                height={50}
+                className="cursor-pointer"
+              ></Image>
             </div>
-            <Image
-              src="/cart.svg"
-              alt=""
-              width={50}
-              height={50}
-              className="cursor-pointer"
-            ></Image>
-          </div>
+          </Link>
           <NavSign></NavSign>
         </div>
       </div>
@@ -60,13 +62,15 @@ export default function Navbar() {
               <SheetDescription>
                 <div className=" space-y-10 text-white p-5">
                   <div className="flex justify-start  items-center gap-3">
-                    <Image
-                      src="/cart.svg"
-                      alt=""
-                      width={50}
-                      height={50}
-                      className="cursor-pointer "
-                    ></Image>
+                    <Link href="/cart">
+                      <Image
+                        src="/cart.svg"
+                        alt=""
+                        width={50}
+                        height={50}
+                        className="cursor-pointer "
+                      ></Image>
+                    </Link>
 
                     <Image
                       src="/avatar.svg"
