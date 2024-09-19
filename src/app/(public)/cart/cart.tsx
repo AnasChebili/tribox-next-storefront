@@ -13,16 +13,18 @@ import {
 import { useRouter } from "next/navigation";
 import { RootState } from "@/store/store";
 import { trpc } from "@/app/_trpc/client";
+import { Spinner } from "@/components/ui/spinner";
 
 type productType = Database["public"]["Tables"]["products"]["Row"];
 
 const Cart = () => {
   const { data: authUser } = trpc.getAuthUser.useQuery();
-  const [cartItems, setCartItems] = useState(() => {
+  const [cartItems, setCartItems] = useState<RouterOutput["getTodos"]>(() => {
     return JSON.parse(localStorage.getItem("cart") || "[]");
   });
   const selector = useSelector((state: RootState) => state.cart.totalAmount);
   const [total, setTotal] = useState(selector);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const totalAmount = cartItems.reduce(
@@ -54,11 +56,27 @@ const Cart = () => {
   console.log(selector);
   const router = useRouter();
 
+  const addOrderMutation = trpc.addOrder.useMutation();
   const checkOut = () => {
     if (authUser) {
       dispatch(setTotalAmount(total));
       dispatch(addAlltoCart(cartItems));
-      router.push("/payment");
+      setIsLoading(true);
+      addOrderMutation.mutate(
+        {
+          items: cartItems.map((cartItem) => cartItem.id),
+          amount: total,
+        },
+        {
+          onSuccess: () => {
+            router.push("/payment");
+          },
+          onError: (error) => {
+            setIsLoading(false);
+            alert(`Error adding order:${error}`);
+          },
+        }
+      );
     } else {
       console.log(authUser);
 
@@ -96,10 +114,15 @@ const Cart = () => {
               </button>
               <div className="mt-8 flex gap-6 items-center">
                 <button
-                  className="bg-green-900 rounded-lg text-xl font-bold w-40 py-3"
+                  disabled={isLoading}
+                  className="bg-green-900 rounded-lg text-xl font-bold w-40 py-3 flex items-center gap-2 justify-center disabled:opacity-50"
                   onClick={checkOut}
                 >
-                  Check Out
+                  <p>Check Out</p>
+
+                  <Spinner
+                    className={!isLoading ? "hidden" : "w-6 h-6 text-white"}
+                  ></Spinner>
                 </button>
                 <h2 className="text-2xl font-bold ">
                   Total: ${total.toFixed(2)}

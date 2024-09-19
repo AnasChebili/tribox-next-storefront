@@ -1,15 +1,18 @@
 // store/cartSlice.js
 import { RouterOutput } from "@/server";
 import { createSlice } from "@reduxjs/toolkit";
+import { UUID } from "crypto";
 
 export type CartState = {
   totalAmount: number;
   items: RouterOutput["getProduct"][];
+  orderId: null | UUID;
 };
 
 const initialState: CartState = {
   totalAmount: 0,
   items: [],
+  orderId: null,
 };
 
 const cartSlice = createSlice({
@@ -28,6 +31,9 @@ const cartSlice = createSlice({
     addAlltoCart: (state, action) => {
       state.items = action.payload;
     },
+    setOrderId: (state, action) => {
+      state.orderId = action.payload;
+    },
   },
 });
 
@@ -36,5 +42,6 @@ export const {
   addItemToCart,
   removeItemFromCart,
   setTotalAmount,
+  setOrderId,
 } = cartSlice.actions;
 export default cartSlice.reducer;

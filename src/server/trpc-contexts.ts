@@ -6,15 +6,23 @@ export const createAdminContext = async ({
 }: {
   cookies: string | null;
 }) => {
-  if (!cookieString) throw new Error();
+  if (!cookieString) {
+    throw new Error("No cookies");
+  }
 
-  const cookies = parse(cookieString);
+  const cookies = !cookieString.authSession
+    ? parse(cookieString)
+    : cookieString;
 
-  if (!cookies.authSession) throw new Error();
+  if (!cookies.authSession) {
+    throw new Error("No auth session");
+  }
 
   const authSession = JSON.parse(cookies.authSession);
 
-  if (!authSession.access_token) throw new Error();
+  if (!authSession.access_token) {
+    throw new Error("No access token");
+  }
 
   const user = await getAuthUser(authSession.access_token);
 

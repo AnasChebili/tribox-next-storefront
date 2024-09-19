@@ -2,7 +2,7 @@ import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
 import SidePanel from "@/components/sidepanel";
 import { appRouter } from "@/server";
-import { createContext } from "@/server/trpc";
+import { createContext, trpcServer } from "@/server/trpc";
 import { createAdminContext } from "@/server/trpc-contexts";
 import { dehydrate, Hydrate, QueryClient } from "@tanstack/react-query";
 import { createServerSideHelpers } from "@trpc/react-query/server";

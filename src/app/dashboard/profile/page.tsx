@@ -12,10 +12,8 @@ export default async function PrivatePage() {
   const user = await trpcServer.getUser.query(authUser.user.id);
 
   if (!user) {
-    redirect("/login");
+    redirect("/on-boarding");
   }
-
-  const imgUrl = await trpcServer.getImage.query(user.image);
 
   return (
     <div className=" text-white  px-14">
@@ -23,7 +21,7 @@ export default async function PrivatePage() {
         <div className="flex items-center">
           <div className="mb-4">
             <Image
-              src={imgUrl ? imgUrl : "/avatar.svg"}
+              src={user.image}
               alt=""
               width={200}
               height={200}
@@ -42,7 +40,7 @@ export default async function PrivatePage() {
         <p className="mt-2 font-light">You can upload more in the dashboard.</p>
       </div>
       <div className="">
-        <Works></Works>
+        <Works initialFilter=""></Works>
       </div>
     </div>
   );

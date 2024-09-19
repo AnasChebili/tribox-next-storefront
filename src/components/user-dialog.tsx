@@ -17,6 +17,7 @@ import ImageUpload from "./ui/imageUpload";
 import Image from "next/image";
 import { UUID } from "crypto";
 import { cn } from "@/lib/utils";
+import { RouterInput, RouterOutput } from "@/server";
 
 type userUpdate = {
   id: UUID;
@@ -29,93 +30,52 @@ type userUpdate = {
   };
 };
 
-export default function UserDialog({
-  opened,
-  authId,
-  id,
-  image,
-  username,
-  email,
-  name,
-  bio,
-}: {
-  opened: boolean;
-  authId: UUID;
-  id: UUID;
-  image: string;
-  username: string;
-  email: string;
-  name: string;
-  bio: string;
-}) {
-  const [imageState, setImageState] = useState<string>(image);
+export default function UserDialog() {
+  const { data: authUser } = trpc.getAuthUser.useQuery();
+  const { data: user } = trpc.getUser.useQuery(authUser!.user.id, {
+    enabled: !!authUser,
+  });
+
+  const [imageState, setImageState] = useState<string | undefined>();
+  const [imageId, setImageId] = useState<string | undefined>();
 
   useEffect(() => {
-    setImageState(image);
-  }, [image]);
+    setImageState(user?.image);
+  }, [user]);
 
   const updateUserMutation = trpc.updateUser.useMutation();
   const utils = trpc.useUtils();
 
-  const addUserMutation = trpc.addUser.useMutation();
-
-  function handleAddTodo(data: userUpdate) {
-    if (id) {
-      updateUserMutation.mutate(data, {
-        onSuccess: () => {
-          console.log("Todo added successfully!");
-          utils.invalidate(undefined, {
-            queryKey: getQueryKey(trpc.getUser),
-          });
-        },
-        onError: (error) => {
-          console.error("Error adding todo:", error);
-        },
-      });
-    } else {
-      data.id = authId;
-      data.data.image = "";
-      const param = {
-        id: data.id,
-        username: data.data.username,
-        email: data.data.email,
-        name: data.data.name,
-        ...(data.data.image && { image: data.data.image }),
-        bio: data.data.bio,
-      };
-      addUserMutation.mutate(param, {
-        onSuccess: () => {
-          console.log("Todo added successfully!");
-          utils.invalidate(undefined, {
-            queryKey: getQueryKey(trpc.getUser),
-          });
-        },
-        onError: (error) => {
-          console.error("Error adding todo:", error);
-        },
-      });
-    }
+  function handleAddTodo(data: RouterInput["updateUser"]) {
+    updateUserMutation.mutate(data, {
+      onSuccess: () => {
+        console.log("Todo added successfully!");
+        utils.invalidate(undefined, {
+          queryKey: getQueryKey(trpc.getUser),
+        });
+      },
+      onError: (error) => {
+        console.error("Error adding todo:", error);
+      },
+    });
   }
-
-  let imageId: string = "";
 
   const { register, handleSubmit, reset } = useForm({
     values: {
-      username: username,
-      email: email,
-      name: name,
-      bio: bio,
+      username: user?.username,
+      email: user?.email,
+      name: user?.name,
+      bio: user?.bio,
     },
   });
-  console.log(opened);
 
-  const [open, setOpen] = useState(opened);
-  console.log(open);
+  const [open, setOpen] = useState(false);
 
   const uploadFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const supabase = createClient();
     const file = event.target.files![0];
-    imageId = `${Math.random()}.${file.name}`;
+    const imageUrl = `${Math.random()}.${file.name}`;
+    setImageId(imageUrl);
 
     const bucket = "documents";
 
@@ -130,7 +90,7 @@ export default function UserDialog({
 
     const { data, error } = await supabase.storage
       .from(bucket)
-      .upload(imageId, file);
+      .upload(imageUrl, file);
 
     if (error) {
       alert("Error uploading file.");
@@ -148,8 +108,11 @@ export default function UserDialog({
     bio: string;
   }) => {
     const data = {
-      id,
-      data: { ...values, image: imageState },
+      id: user?.id,
+      data: {
+        ...values,
+        ...(imageState != user?.image && { image: imageId }),
+      },
     };
 
     console.log(data);
@@ -161,95 +124,100 @@ export default function UserDialog({
 
   return (
     <div className="">
-      <Dialog open={opened ? opened : open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <p className="px-6 py-3 rounded-lg bg-gray-900 font-bold hover:bg-gray-700 cursor-pointer">
-            edit
-          </p>
-        </DialogTrigger>
-        <DialogContent className="max-w-md w-full border-0 p-6 bg-gray-900 bg-opacity-95 text-gray-400 rounded-lg shadow-md">
-          <DialogTitle>Edit Information</DialogTitle>
-          <form
-            onSubmit={handleSubmit((values) => {
-              uploadData(values);
-            })}
-            className="space-y-4 "
-          >
-            {JSON.stringify(imageState)}
-            <div className="flex gap-4 items-center">
-              <Image
-                src={imageState}
-                alt=""
-                height={50}
-                width={50}
-                className="rounded-full"
-              ></Image>
-
-              <ImageUpload onChange={uploadFile} id="0"></ImageUpload>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 ">
-                Username
-              </label>
-              <input
-                type="text"
-                {...register("username", { required: true })}
-                className="mt-1 block w-full border border-gray-800 rounded-md bg-transparent py-1"
-              />
-            </div>
-
-            <div className={opened ? "hidden" : ""}>
-              <label className="block text-sm font-medium text-gray-700 ">
-                Email
-              </label>
-              <input
-                type="text"
-                {...register("email", { required: true })}
-                className="mt-1 block w-full border border-gray-800 rounded-md bg-transparent py-1"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 ">
-                Name
-              </label>
-              <input
-                type="text"
-                {...register("name", { required: true })}
-                className="mt-1 block w-full border border-gray-800 rounded-md bg-transparent py-1"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Bio
-              </label>
-              <textarea
-                {...register("bio", { required: false })}
-                className="mt-1 block w-full border rounded-md bg-transparent border-gray-800"
-              ></textarea>
-            </div>
-
-            <div className="flex justify-end">
-              <DialogClose asChild>
-                <button
-                  type="button"
-                  className="mr-2 px-4 py-2 bg-gray-300 rounded-md bg-transparent border-2"
-                >
-                  Cancel
-                </button>
-              </DialogClose>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-white text-black font-bold rounded-md"
+      {user && (
+        <div>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <p className="px-6 py-3 rounded-lg bg-gray-900 font-bold hover:bg-gray-700 cursor-pointer">
+                edit
+              </p>
+            </DialogTrigger>
+            <DialogContent className="max-w-md w-full border-0 p-6 bg-gray-900 bg-opacity-95 text-gray-400 rounded-lg shadow-md">
+              <DialogTitle>Edit Information</DialogTitle>
+              <form
+                onSubmit={handleSubmit((values) => {
+                  uploadData(values);
+                })}
+                className="space-y-4 "
               >
-                Submit
-              </button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+                <div className="flex gap-4 items-center">
+                  {imageState && (
+                    <Image
+                      src={imageState}
+                      alt=""
+                      height={50}
+                      width={50}
+                      className="rounded-full"
+                    ></Image>
+                  )}
+
+                  <ImageUpload onChange={uploadFile} id="0"></ImageUpload>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 ">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    {...register("username", { required: true })}
+                    className="mt-1 block w-full border border-gray-800 rounded-md bg-transparent py-1"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 ">
+                    Email
+                  </label>
+                  <input
+                    type="text"
+                    {...register("email", { required: true })}
+                    className="mt-1 block w-full border border-gray-800 rounded-md bg-transparent py-1"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 ">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    {...register("name", { required: true })}
+                    className="mt-1 block w-full border border-gray-800 rounded-md bg-transparent py-1"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Bio
+                  </label>
+                  <textarea
+                    {...register("bio", { required: false })}
+                    className="mt-1 block w-full border rounded-md bg-transparent border-gray-800"
+                  ></textarea>
+                </div>
+
+                <div className="flex justify-end">
+                  <DialogClose asChild>
+                    <button
+                      type="button"
+                      className="mr-2 px-4 py-2 bg-gray-300 rounded-md bg-transparent border-2"
+                    >
+                      Cancel
+                    </button>
+                  </DialogClose>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-white text-black font-bold rounded-md"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
     </div>
   );
 }

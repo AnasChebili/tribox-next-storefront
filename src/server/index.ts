@@ -42,6 +42,11 @@ const UserUpdateSchema = z.object({
   }),
 });
 
+const addOrderSchema = z.object({
+  items: z.array(z.string().uuid()),
+  amount: z.number(),
+});
+
 const UserAddSchema = z.object({
   id: z.string().uuid(),
   username: z.string(),
@@ -147,6 +152,8 @@ export const appRouter = router({
 
     if (!user || user.length <= 0) return undefined;
 
+    user[0].image = await trpcServer.getImage.query(user[0].image);
+
     return user[0];
   }),
   // getAuthUser: privateProcedure.query(async ({ ctx }) => ctx),
@@ -207,6 +214,13 @@ export const appRouter = router({
     const { error } = await supabase.from("users").insert([input]);
     if (error) console.log("error adding userrr", error);
   }),
+  addOrder: publicProcedure
+    .input(addOrderSchema)
+    .mutation(async ({ input }) => {
+      const supabase = createClient();
+      const { error } = await supabase.from("orders").insert([input]);
+      if (error) console.log("error adding order", error);
+    }),
 });
 
 export type AppRouter = typeof appRouter;

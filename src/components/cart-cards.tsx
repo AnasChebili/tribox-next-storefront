@@ -1,12 +1,9 @@
 import RecCard from "./ui/reccard";
 import { Database } from "../../database.types";
 import CartCard from "./ui/cart-card";
+import { RouterOutput } from "@/server";
 
-type categtype = Database["public"]["Tables"]["products"]["Row"];
-
-export type categstype = {
-  categs: categtype[];
-};
+export type categstype = RouterOutput["getTodos"];
 
 export default function CartCards({
   categs,
@@ -17,7 +14,7 @@ export default function CartCards({
 }) {
   return (
     <div className="flex overflow-auto ml-[5%] space-x-6 pb-3 ">
-      {categs.map((categ: categtype) => (
+      {categs.map((categ) => (
         <div key={categ.id} className="min-w-64 max-w-[250px]">
           <CartCard
             image={categ.image[0]}

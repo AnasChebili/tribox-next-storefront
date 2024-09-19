@@ -13,12 +13,6 @@ export default function Settings() {
     enabled: !!authUser,
   });
 
-  let opened = false;
-
-  const { data: imgUrl } = trpc.getImage.useQuery(user?.image!, {
-    enabled: !!user?.image,
-  });
-
   const logoutMutation = trpc.logout.useMutation({
     onSuccess: (data) => {
       router.push("/login");
@@ -34,16 +28,8 @@ export default function Settings() {
       <div className="my-11">
         <div className="flex justify-between">
           <h1 className="text-4xl font-bold">Profile Information</h1>
-          <UserDialog
-            opened={opened}
-            authId={authUser?.id}
-            id={user.id}
-            image={imgUrl}
-            username={user.username}
-            email={authUser?.email}
-            name={user.name}
-            bio={user.bio}
-          />
+
+          <UserDialog />
         </div>
 
         <p className="mb-10 font-light">
@@ -51,18 +37,26 @@ export default function Settings() {
           clicking on the Edit button
         </p>
         <div className="mb-4">
-          <Image
-            src={imgUrl ? imgUrl : "/avatar.svg"}
-            alt=""
-            width={100}
-            height={100}
-            className="cursor-pointer rounded-full"
-          />
+          {user && (
+            <div>
+              <Image
+                src={user.image}
+                alt=""
+                width={100}
+                height={100}
+                className="cursor-pointer rounded-full"
+              />
+            </div>
+          )}
         </div>
-        <p>Username: {user.username}</p>
-        <p>Email: {user.email}</p>
-        <p>Name: {user.name}</p>
-        <p>Bio: {user.bio}</p>
+        {user && (
+          <div>
+            <p>Username: {user.username}</p>
+            <p>Email: {user.email}</p>
+            <p>Name: {user.name}</p>
+            <p>Bio: {user.bio}</p>
+          </div>
+        )}
       </div>
       <div className="w-full h-[1px] bg-white"></div>
       <div className="my-11">
