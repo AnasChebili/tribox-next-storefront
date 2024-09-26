@@ -14,6 +14,7 @@ export default function Home() {
     if (category) {
       targetRef.current?.scrollIntoView({ behavior: "smooth" });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

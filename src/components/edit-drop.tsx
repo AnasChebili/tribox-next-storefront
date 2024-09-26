@@ -11,22 +11,18 @@ import { getQueryKey } from "@trpc/react-query";
 import Image from "next/image";
 import EditDialog from "./edit-dialog";
 import { UUID } from "crypto";
+import { Dispatch, useState } from "react";
+import { RouterOutput } from "@/server";
 
 export default function EditDrop({
-  id,
-  title,
-  description,
-  tags,
+  product,
 }: {
-  id: UUID;
-  title: string;
-  description: string;
-  tags: string[];
+  product: RouterOutput["getProduct"];
 }) {
   const deleteProductMutation = trpc.deleteProduct.useMutation();
   const utils = trpc.useUtils();
 
-  function handleDeleteProduct(id: UUID) {
+  function handleDeleteProduct(id: string) {
     deleteProductMutation.mutate(id, {
       onSuccess: () => {
         console.log("product Deleted Succefully");
@@ -39,6 +35,8 @@ export default function EditDrop({
       },
     });
   }
+
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   return (
     <>
@@ -53,7 +51,7 @@ export default function EditDrop({
             className="flex cursor-pointer p-2"
             onClick={(event) => {
               event.stopPropagation();
-              handleDeleteProduct(id);
+              handleDeleteProduct(product.id);
             }}
           >
             <div className=" w-4 h-4 ">
@@ -70,12 +68,28 @@ export default function EditDrop({
             className="cursor-pointer p-0"
             onClick={(event) => {
               event.stopPropagation();
+              setIsEditDialogOpen((prevvalue) => !prevvalue);
             }}
           >
-            <EditDialog id={id}></EditDialog>
+            <div className=" w-full h-full flex p-2">
+              <div className="w-4 h-4 ">
+                <Image
+                  src="/editing.png"
+                  alt=""
+                  height={128}
+                  width={128}
+                ></Image>
+              </div>
+              <p>Edit</p>
+            </div>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      <EditDialog
+        open={isEditDialogOpen}
+        setOpen={setIsEditDialogOpen}
+        product={product}
+      ></EditDialog>
     </>
   );
 }

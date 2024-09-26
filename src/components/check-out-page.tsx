@@ -1,32 +1,26 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   useStripe,
   useElements,
   PaymentElement,
 } from "@stripe/react-stripe-js";
-import convertToSubcurrency from "@/lib/convertToSubcurrency";
 import { Spinner } from "./ui/spinner";
 
-export default function CheckoutPage({ amount }: { amount: number }) {
+export default function CheckoutPage({
+  amount,
+  clientSecret,
+  orderId,
+}: {
+  amount: number;
+  clientSecret: string;
+  orderId: string;
+}) {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<string>();
-  const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/create-payment-intent", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ amount: convertToSubcurrency(amount) }),
-    })
-      .then((res) => res.json())
-      .then((data) => setClientSecret(data.clientSecret));
-  }, [amount]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -48,7 +42,7 @@ export default function CheckoutPage({ amount }: { amount: number }) {
       elements,
       clientSecret,
       confirmParams: {
-        return_url: `http://localhost:3000/payment-success?amount=${amount}`,
+        return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment-success?orderId=${orderId}`,
       },
     });
 

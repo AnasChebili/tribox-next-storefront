@@ -24,7 +24,7 @@ export default function Settings() {
   });
 
   return (
-    <div className="text-white px-14">
+    <div className="text-white lg:px-14">
       <div className="my-11">
         <div className="flex justify-between">
           <h1 className="text-4xl font-bold">Profile Information</h1>
@@ -40,7 +40,7 @@ export default function Settings() {
           {user && (
             <div>
               <Image
-                src={user.image}
+                src={user.image != "" ? user.image : "/anonymous-avatar.png"}
                 alt=""
                 width={100}
                 height={100}

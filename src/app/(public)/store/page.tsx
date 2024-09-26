@@ -5,16 +5,22 @@ import Recommendations from "@/components/recommendations";
 import Image from "next/image";
 import { trpcServer } from "@/server/trpc";
 import { createClient } from "../../../../utils/supabase/server";
-import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function StoreAuth() {
   const supabase = createClient();
   const products = await trpcServer.getTodos.query();
-  // console.log("==================================", cookies().getAll());
+  let user;
+  try {
+    const authUser = await trpcServer.getAuthUser.query();
+    user = await trpcServer.getUser.query(authUser.user.id);
+  } catch (error) {
+    user = undefined;
+  }
 
   return (
     <div className="mb-28">
-      <Morning></Morning>
+      <Morning user={user}></Morning>
       <h1 className="my-11 text-4xl font-bold ml-[5%]">Top Categories</h1>
       <Categories></Categories>
       <div className="my-11  ml-[5%]">
@@ -40,7 +46,7 @@ export default async function StoreAuth() {
 
       <div className="my-11  ml-[5%]">
         <h1 className="text-4xl font-bold">Acedia x Tri-Box Collection</h1>
-        <p className="mt-2 font-light w-1/2">
+        <p className="mt-2 font-light sm:w-1/2">
           Lorem Ipsum is simply dummy text of the printing and typesetting
           industry. Lorem Ipsum has been the industry's standard dummy text ever
           since the 1500s, when an unknown printer took a galley of type and

@@ -17,13 +17,18 @@ import { Spinner } from "@/components/ui/spinner";
 
 type productType = Database["public"]["Tables"]["products"]["Row"];
 
-const Cart = () => {
+const Cart = ({ toPaymentBool }: { toPaymentBool: boolean }) => {
   const { data: authUser } = trpc.getAuthUser.useQuery();
   const [cartItems, setCartItems] = useState<RouterOutput["getTodos"]>(() => {
     return JSON.parse(localStorage.getItem("cart") || "[]");
   });
   const selector = useSelector((state: RootState) => state.cart.totalAmount);
-  const [total, setTotal] = useState(selector);
+  const [total, setTotal] = useState(
+    cartItems.reduce(
+      (sum: number, product: productType) => sum + product.price,
+      0
+    )
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -32,7 +37,9 @@ const Cart = () => {
       0
     );
     setTotal(totalAmount);
-  }, [cartItems]);
+    if (toPaymentBool) checkOut();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartItems, toPaymentBool]);
 
   const removeCard = (id: string) => {
     console.log(cartItems);
@@ -56,20 +63,24 @@ const Cart = () => {
   console.log(selector);
   const router = useRouter();
 
-  const addOrderMutation = trpc.addOrder.useMutation();
+  const placeOrderMutation = trpc.placeOrder.useMutation();
   const checkOut = () => {
+    console.log("entered");
+
     if (authUser) {
       dispatch(setTotalAmount(total));
       dispatch(addAlltoCart(cartItems));
       setIsLoading(true);
-      addOrderMutation.mutate(
+      placeOrderMutation.mutate(
         {
           items: cartItems.map((cartItem) => cartItem.id),
           amount: total,
         },
         {
-          onSuccess: () => {
-            router.push("/payment");
+          onSuccess: (data) => {
+            router.push(
+              `/payment?clientSecret=${data.clientSecret}&order=${data.order}`
+            );
           },
           onError: (error) => {
             setIsLoading(false);
@@ -78,8 +89,6 @@ const Cart = () => {
         }
       );
     } else {
-      console.log(authUser);
-
       router.push("/login");
     }
   };

@@ -16,10 +16,10 @@ export default function NotAuthLayout({
 }>) {
   return (
     <div className="flex bg-white">
-      <div className="w-1/2 h-[100vh]">
+      <div className="hidden sm:block w-1/2 h-[100vh]">
         <AuthImage></AuthImage>
       </div>
-      <div className=" w-1/2 text-black">{children}</div>
+      <div className=" sm:w-1/2 w-full text-black">{children}</div>
     </div>
   );
 }

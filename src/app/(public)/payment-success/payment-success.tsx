@@ -1,34 +1,45 @@
 "use client";
 
 import { RouterOutput } from "@/server";
-import { RootState } from "@/store/store";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useRef } from "react";
 
-export default function PaymentSuccess({ amount }: { amount: string }) {
-  const items = useSelector((state: RootState) => state.cart.items);
-  console.log(items);
+export default function PaymentSuccess({
+  items,
+  amount,
+}: {
+  items: RouterOutput["getProduct"][] | null;
+  amount: number;
+}) {
+  const hasDownloaded = useRef(false);
 
   useEffect(() => {
-    const downloadFile = (product: RouterOutput["getProduct"]) => {
-      const link = document.createElement("a");
-      link.href = product.image[0];
-      link.download = `${product.title}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    const downloadFile = async (product: RouterOutput["getProduct"]) => {
+      if (!hasDownloaded.current) {
+        const response = await fetch(product.image[0]);
+        const blob = await response.blob();
+        const link = document.createElement("a");
+        const objectUrl = URL.createObjectURL(blob);
+        link.href = objectUrl;
+        link.download = `${product.title}.png`;
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(objectUrl);
+        document.body.removeChild(link);
+        hasDownloaded.current = true;
+      }
     };
-    items.forEach((item) => downloadFile(item));
+    if (items) items.forEach((item) => downloadFile(item));
+    localStorage.setItem("cart", JSON.stringify([]));
   }, [items]);
 
   return (
     <div className="flex items-center justify-center min-h-screen text-white">
       <div className="text-center">
         <h1 className="text-5xl font-bold mb-4">Thank you!</h1>
-        <p className="text-lg mb-6">You successfully sent</p>
-        <p className="text-lg mb-6 text-black font-bold p-2 bg-white rounded-lg">
-          ${amount}
+        <p className="text-lg mb-6">
+          Your assets will be downloaded automatically
         </p>
+
         <div className="animate-bounce text-3xl">✅</div>
       </div>
     </div>

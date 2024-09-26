@@ -22,7 +22,7 @@ export type categstype = {
 export default function Recommendations({
   categs,
 }: {
-  categs: RouterOutput["getTodos"];
+  categs: RouterOutput["getTodos"] | undefined;
 }) {
   return (
     <div>
@@ -32,16 +32,7 @@ export default function Recommendations({
         <div className="flex overflow-auto ml-[5%] space-x-6 pb-3 ">
           {categs.map((categ, index) => (
             <div key={categ.id} className="min-w-64 max-w-[250px]">
-              <RecCard
-                image={categ.image[0]}
-                rating={categ.rating}
-                title={categ.title}
-                date={categ.date}
-                author={categ.author}
-                tags={categ.tags}
-                description={categ.description}
-                id={categ.id}
-              ></RecCard>
+              <RecCard product={categ}></RecCard>
             </div>
           ))}
         </div>

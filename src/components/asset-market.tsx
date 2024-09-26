@@ -1,10 +1,13 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function AssetMarket() {
   return (
     <div className="flex justify-between items-center mt-16">
       <div className="w-[500px] ml-8 mb-8">
-        <h1 className="text-5xl font-bold tracking-widest mb-7">ASSET MARKET</h1>
+        <h1 className="text-5xl font-bold tracking-widest mb-7">
+          ASSET MARKET
+        </h1>
         <h2 className="text-4xl font-extralight tracking-[15px] mb-7">
           WITH A TWIST
         </h2>
@@ -30,11 +33,25 @@ export default function AssetMarket() {
           </span>
         </p>
         <div className="flex space-x-5">
-          <button className="bg-sky-500 h-[43px] w-[125px] leading-[37px] align-middle text-base font-light">View Store</button>
-          <button className="bg-transparent underline underline-offset-4 font-light">Upload an asset</button>
+          <Link href="/store">
+            <button className="bg-sky-500 h-[43px] w-[125px] leading-[37px] align-middle text-base font-light">
+              View Store
+            </button>
+          </Link>
+          <Link href="/dashboard">
+            <button className="bg-transparent underline underline-offset-4 font-light">
+              Upload an asset
+            </button>
+          </Link>
         </div>
       </div>
-      <Image src="/art.svg" alt="" width={800} height={700} className=" hidden md:block  md:w-[400px] xl:w-[800px]"></Image>
+      <Image
+        src="/art.svg"
+        alt=""
+        width={800}
+        height={700}
+        className=" hidden md:block  md:w-[400px] xl:w-[800px]"
+      ></Image>
     </div>
   );
 }

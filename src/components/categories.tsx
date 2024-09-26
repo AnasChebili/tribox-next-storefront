@@ -1,4 +1,5 @@
 import Link from "next/link";
+import tagsTable from "@/data/tags-table.json";
 
 export default function Categories() {
   const categs: Array<{
@@ -59,7 +60,12 @@ export default function Categories() {
     <div className="flex overflow-auto ml-[5%] space-x-6 no-scrollbar pb-3">
       {categs.map((categ, index) => (
         <Link
-          href={{ pathname: "/", query: { category: categ.title } }}
+          href={{
+            pathname: "/",
+            query: {
+              category: tagsTable.find((tag) => tag.title === categ.title)?.key,
+            },
+          }}
           key={index}
           className=" relative min-w-64 min-h-56 bg-no-repeat bg-cover bg-center rounded-2xl cursor-pointer"
           style={{ backgroundImage: `url(${categ.image})` }}

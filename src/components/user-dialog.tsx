@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, ReactEventHandler, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -15,32 +15,17 @@ import { createClient } from "../../utils/supabase/client";
 import { getQueryKey } from "@trpc/react-query";
 import ImageUpload from "./ui/imageUpload";
 import Image from "next/image";
-import { UUID } from "crypto";
-import { cn } from "@/lib/utils";
-import { RouterInput, RouterOutput } from "@/server";
-
-type userUpdate = {
-  id: UUID;
-  data: {
-    image: string;
-    username: string;
-    email: string;
-    name: string;
-    bio: string;
-  };
-};
+import { RouterInput } from "@/server";
 
 export default function UserDialog() {
-  const { data: authUser } = trpc.getAuthUser.useQuery();
-  const { data: user } = trpc.getUser.useQuery(authUser!.user.id, {
-    enabled: !!authUser,
-  });
+  const { data: authUser } = trpc.getAuthUser.useQuery(); //prefetches in layout
+  const { data: user } = trpc.getUser.useQuery(authUser!.user.id); // user cannot be undefined, handled in dashboard layout
 
   const [imageState, setImageState] = useState<string | undefined>();
   const [imageId, setImageId] = useState<string | undefined>();
 
   useEffect(() => {
-    setImageState(user?.image);
+    setImageState(user!.image);
   }, [user]);
 
   const updateUserMutation = trpc.updateUser.useMutation();
@@ -62,10 +47,10 @@ export default function UserDialog() {
 
   const { register, handleSubmit, reset } = useForm({
     values: {
-      username: user?.username,
-      email: user?.email,
-      name: user?.name,
-      bio: user?.bio,
+      username: user!.username,
+      email: user!.email,
+      name: user!.name,
+      bio: user!.bio,
     },
   });
 
@@ -108,7 +93,7 @@ export default function UserDialog() {
     bio: string;
   }) => {
     const data = {
-      id: user?.id,
+      id: user!.id,
       data: {
         ...values,
         ...(imageState != user?.image && { image: imageId }),
@@ -128,7 +113,7 @@ export default function UserDialog() {
         <div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <p className="px-6 py-3 rounded-lg bg-gray-900 font-bold hover:bg-gray-700 cursor-pointer">
+              <p className="px-5 py-3 rounded-lg bg-gray-900 font-bold hover:bg-gray-700 cursor-pointer">
                 edit
               </p>
             </DialogTrigger>

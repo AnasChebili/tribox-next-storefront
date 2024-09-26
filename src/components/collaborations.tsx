@@ -3,17 +3,7 @@ import { UUID } from "crypto";
 import Image from "next/image";
 import Link from "next/link";
 
-const CollabCard = async ({
-  id,
-  image,
-  num,
-  stats,
-}: {
-  id: UUID;
-  image: string;
-  num: string;
-  stats: string;
-}) => {
+const CollabCard = async ({ id, image }: { id: string; image: string }) => {
   const imgUrl = await trpcServer.getImage.query(image);
   return (
     <div className="min-w-80 cursor-pointer">
@@ -25,8 +15,8 @@ const CollabCard = async ({
           height={350}
           className="w-80 h-80"
         ></Image>
-        <h1 className="font-bold text-4xl mt-2">{num}</h1>
-        <p className="text-xl">{stats}</p>
+        {/* <h1 className="font-bold text-4xl mt-2">{num}</h1>
+        <p className="text-xl">{stats}</p> */}
       </Link>
     </div>
   );
@@ -51,9 +41,7 @@ export default async function Collaborations() {
           <CollabCard
             key={collab.id}
             id={collab.id}
-            image={collab.image}
-            num={collab.num}
-            stats={collab.stats}
+            image={collab.image != "" ? collab.image : "/anonymous-avatar.png"}
           ></CollabCard>
         ))}
     </div>

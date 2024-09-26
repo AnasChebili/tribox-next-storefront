@@ -62,13 +62,13 @@ export default function Home() {
           setEmailMessage(true);
         }
       })}
-      className="my-[30%] w-[50%] mx-auto"
+      className="my-[30%] lg:w-[50%]  px-4 lg:px-0 mx-auto"
     >
       <div className="flex">
-        <div className="border-b-[3px] border-gray-300 font-light text-xl pl-4 pr-2 pb-2 text-gray-500">
+        <div className="border-b-[3px] border-gray-300 font-light text-xl xl:pl-4 pl-1 pr-2 pb-2 text-gray-500">
           <Link href="/login">Sign-in</Link>
         </div>
-        <div className="border-b-[3px]  border-blue-600  font-bold text-xl pl-8 pr-4 pb-2  cursor-pointer">
+        <div className="border-b-[3px]  border-blue-600  font-bold text-xl xl:pl-8 pl-2 pr-2 pb-2  cursor-pointer">
           Create an account
         </div>
       </div>

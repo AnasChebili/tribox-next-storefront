@@ -11,19 +11,16 @@ export type Database = {
     Tables: {
       orders: {
         Row: {
-          amount: number | null
           created_at: string
           id: string
           items: string[] | null
         }
         Insert: {
-          amount?: number | null
           created_at?: string
           id?: string
           items?: string[] | null
         }
         Update: {
-          amount?: number | null
           created_at?: string
           id?: string
           items?: string[] | null
@@ -32,38 +29,50 @@ export type Database = {
       }
       products: {
         Row: {
+          assets: string[]
           author: string
+          author_id: string
           created_at: string
-          date: string
           description: string
+          formats: string[]
           id: string
           image: string[]
           price: number
           rating: number
+          shapes: string[]
+          software: string[]
           tags: string[]
           title: string
         }
         Insert: {
+          assets?: string[]
           author: string
+          author_id: string
           created_at?: string
-          date: string
           description: string
+          formats?: string[]
           id?: string
           image: string[]
           price: number
           rating: number
+          shapes?: string[]
+          software?: string[]
           tags: string[]
           title: string
         }
         Update: {
+          assets?: string[]
           author?: string
+          author_id?: string
           created_at?: string
-          date?: string
           description?: string
+          formats?: string[]
           id?: string
           image?: string[]
           price?: number
           rating?: number
+          shapes?: string[]
+          software?: string[]
           tags?: string[]
           title?: string
         }
@@ -71,35 +80,35 @@ export type Database = {
       }
       users: {
         Row: {
-          bio: string | null
+          bio: string
           bought_products: string[]
           created_at: string | null
           email: string
           id: string
           image: string
-          name: string | null
+          name: string
           updated_at: string | null
           username: string
         }
         Insert: {
-          bio?: string | null
+          bio?: string
           bought_products?: string[]
           created_at?: string | null
           email: string
           id?: string
           image?: string
-          name?: string | null
+          name?: string
           updated_at?: string | null
           username: string
         }
         Update: {
-          bio?: string | null
+          bio?: string
           bought_products?: string[]
           created_at?: string | null
           email?: string
           id?: string
           image?: string
-          name?: string | null
+          name?: string
           updated_at?: string | null
           username?: string
         }

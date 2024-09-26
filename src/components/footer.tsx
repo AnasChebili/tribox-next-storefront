@@ -11,7 +11,7 @@ export default function Footer() {
         height={50}
         className="mb-5"
       ></Image>
-      <div className="footerlist flex justify-between mb-20">
+      <div className="footerlist grid grid-cols-2 sm:flex sm:justify-between mb-20">
         <FooterList>{["Product", "Updates", "Security", "Join"]}</FooterList>
         <FooterList>{["Company", "About", "FAQ", "Forum"]}</FooterList>
         <FooterList>

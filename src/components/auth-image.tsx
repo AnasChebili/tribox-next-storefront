@@ -9,7 +9,7 @@ export default function AuthImage() {
           alt=""
           height={1449}
           width={864}
-          className="object-cover -translate-y-10 w-full h-full"
+          className="object-cover w-full h-full"
         ></Image>
       </div>
       <Image

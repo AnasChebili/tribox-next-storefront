@@ -9,25 +9,41 @@ import {
 import { z } from "zod";
 import { inferRouterInputs, inferRouterOutputs, TRPCError } from "@trpc/server";
 import { cookies } from "next/headers";
+import convertToSubcurrency from "@/lib/convertToSubcurrency";
+import { Input } from "postcss";
+import { NextResponse } from "next/server";
+import { Database } from "../../database.types";
+import { Order } from "@stripe/stripe-js";
 
 const todoSchema = z.object({
-  created_at: z.coerce.date(),
   image: z.array(z.string()),
   rating: z.number(),
   title: z.string(),
-  date: z.string(),
   author: z.string(),
   tags: z.array(z.string()),
+  formats: z.array(z.string()),
+  software: z.array(z.string()),
+  shapes: z.array(z.string()),
+  assets: z.array(z.string()),
   description: z.string(),
+  price: z.number(),
+  author_id: z.string().uuid(),
 });
 
 const UpdateSchema = z.object({
   id: z.string().uuid(),
   data: z.object({
-    image: z.array(z.string()).optional(),
-    title: z.string().optional(),
-    tags: z.array(z.string()).optional(),
-    description: z.string().optional(),
+    image: z.array(z.string()),
+    rating: z.number(),
+    title: z.string(),
+    author: z.string(),
+    tags: z.array(z.string()),
+    formats: z.array(z.string()),
+    software: z.array(z.string()),
+    shapes: z.array(z.string()),
+    assets: z.array(z.string()),
+    description: z.string(),
+    price: z.number(),
   }),
 });
 
@@ -37,7 +53,7 @@ const UserUpdateSchema = z.object({
     username: z.string(),
     image: z.string().optional(),
     email: z.string(),
-    name: z.string(),
+    name: z.string().optional(),
     bio: z.string().optional(),
   }),
 });
@@ -51,7 +67,7 @@ const UserAddSchema = z.object({
   id: z.string().uuid(),
   username: z.string(),
   email: z.string(),
-  name: z.string(),
+  name: z.string().optional(),
   image: z.string().optional(),
   bio: z.string().optional(),
 });
@@ -74,31 +90,40 @@ export const appRouter = router({
     });
     const transformedProducts = await Promise.all(promises);
 
-    return products;
+    return transformedProducts;
   }),
   addTodo: publicProcedure.input(todoSchema).mutation(async ({ input }) => {
     const supabase = createClient();
-    const { error } = await supabase.from("products").insert([
-      {
-        created_at: input.created_at.toString(),
-        price: 0,
-        image: input.image,
-        rating: input.rating,
-        title: input.title,
-        date: input.date,
-        author: input.author,
-        tags: input.tags,
-        description: input.description,
-      },
-    ]);
+    const { error } = await supabase.from("products").insert([input]);
 
-    if (error) {
-      console.error("Error inserting row:", error.message);
-      throw new Error("Failed to add todo");
-    }
+    if (error) throw error;
 
     return { success: true };
   }),
+  getProductsOfUser: publicProcedure
+    .input(z.string().uuid())
+    .query(async ({ input }) => {
+      const supabase = createClient();
+      const { data: products, error } = await supabase
+        .from("products")
+        .select()
+        .eq("author_id", input);
+
+      if (!products || error) {
+        throw error;
+      }
+
+      const promises = products.map(async (product, index) => {
+        const promises = (product.image as string[]).map((supabaseImageUrl) =>
+          trpcServer.getImage.query(supabaseImageUrl)
+        );
+        product.image = await Promise.all(promises);
+        return product;
+      });
+      const transformedProducts = await Promise.all(promises);
+
+      return transformedProducts;
+    }),
   getProduct: publicProcedure
     .input(z.string().uuid())
     .query(async ({ input }) => {
@@ -151,8 +176,8 @@ export const appRouter = router({
       .eq("id", input);
 
     if (!user || user.length <= 0) return undefined;
-
-    user[0].image = await trpcServer.getImage.query(user[0].image);
+    if (user[0].image != "")
+      user[0].image = await trpcServer.getImage.query(user[0].image);
 
     return user[0];
   }),
@@ -214,12 +239,79 @@ export const appRouter = router({
     const { error } = await supabase.from("users").insert([input]);
     if (error) console.log("error adding userrr", error);
   }),
-  addOrder: publicProcedure
+  placeOrder: publicProcedure
     .input(addOrderSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input }): Promise<any> => {
       const supabase = createClient();
-      const { error } = await supabase.from("orders").insert([input]);
-      if (error) console.log("error adding order", error);
+      const { data, error } = await supabase
+        .from("orders")
+        .insert([{ items: input.items }])
+        .select();
+      if (error) console.log(error);
+
+      const res = await trpcServer.createPaymentIntent.query(input.amount);
+
+      return {
+        order: data ? data[0].id : undefined,
+        //@ts-expect-error
+        clientSecret: res.clientSecret ? res.clientSecret : res.error,
+      };
+    }),
+  getOrder: publicProcedure
+    .input(z.object({ orderId: z.string().uuid() }))
+    .query(async ({ input }) => {
+      const supabase = createClient();
+      const { data: order } = await supabase
+        .from("orders")
+        .select()
+        .eq("id", input.orderId);
+
+      if (!order || order.length <= 0) return undefined;
+
+      const { data: items, error } = await supabase
+        .from("products")
+        .select("*")
+        //@ts-expect-error
+        .in("id", order[0].items);
+      type Order = Omit<Database["public"]["Tables"]["orders"]["Row"], "items">;
+
+      type OrderWithPopulatedProducts = Order & {
+        items: Database["public"]["Tables"]["products"]["Row"][] | null;
+      };
+
+      const transformedOrder: OrderWithPopulatedProducts = {
+        ...order[0],
+        items,
+      };
+      if (!transformedOrder.items) return transformedOrder;
+      const promises = transformedOrder.items.map(async (item, index) => {
+        const promises = (item.image as string[]).map((supabaseImageUrl) =>
+          trpcServer.getImage.query(supabaseImageUrl)
+        );
+        item.image = await Promise.all(promises);
+        return item;
+      });
+      const transformedProducts = await Promise.all(promises);
+
+      return transformedOrder;
+    }),
+  createPaymentIntent: publicProcedure
+    .input(z.number())
+    .query(async ({ input }) => {
+      try {
+        const amount = input;
+        const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: convertToSubcurrency(amount),
+          currency: "usd",
+          automatic_payment_methods: { enabled: true },
+        });
+
+        return { clientSecret: paymentIntent.client_secret };
+      } catch (error) {
+        console.log(error);
+        return { error: `internal server error: ${error}` };
+      }
     }),
 });
 

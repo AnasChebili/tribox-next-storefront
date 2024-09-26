@@ -7,11 +7,9 @@ import Recskeleton from "./recskeleton";
 import EditCards from "./editcards";
 
 export default function DashProducts() {
-  const products = trpc.getTodos.useQuery();
-  const isLoading = products.isLoading;
-  const recs3 = products.data;
-
-  console.log("recs3:", recs3, "idloading:", isLoading);
+  const { data: authsUser } = trpc.getAuthUser.useQuery(); // prefetched in layout
+  const { data: user } = trpc.getUser.useQuery(authsUser!.user.id); // user cannot be undefined, handled in middleware and layout
+  const { data: products } = trpc.getProductsOfUser.useQuery(user!.id);
 
   return (
     <>
@@ -21,8 +19,8 @@ export default function DashProducts() {
           Click on "Add Product" to add a product!
         </p>
       </div>
-      {recs3 ? (
-        <EditCards categs={recs3}></EditCards>
+      {products ? (
+        <EditCards categs={products}></EditCards>
       ) : (
         <Recskeleton></Recskeleton>
       )}

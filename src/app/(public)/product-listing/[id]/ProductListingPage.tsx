@@ -5,15 +5,52 @@ import ProductFormats from "@/components/product-formats";
 import Recommendations from "@/components/recommendations";
 import Image from "next/image";
 import { FC } from "react";
-import recs1 from "../../../../data/reccomendations.json";
 import { trpc } from "@/app/_trpc/client";
 import { RouterOutput } from "@/server";
-import { trpcServer } from "@/server/trpc";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
+const shapesTable = [
+  {
+    image: "/brutalist1.png",
+    title: "Polygons",
+    key: "polygons",
+    desc: "784,570",
+  },
+  {
+    image: "/brutalist2.png",
+    title: "Vertices",
+    key: "vertices",
+    desc: "784,570",
+  },
+  {
+    image: "/brutalist3.png",
+    title: "Geometry",
+    key: "geometry",
+    desc: "Tris/Quads",
+  },
+];
+
+const assetsTable = [
+  { image: "/brutalist4.png", title: "Textures", key: "textures" },
+  { image: "/brutalist5.png", title: "UVs", key: "uvs" },
+  { image: "/brutalist6.png", title: "Brushes", key: "brushes" },
+];
 
 export const ProductListingPage: FC<{
-  product: RouterOutput["getProduct"];
-}> = ({ product }) => {
+  productId: string;
+}> = ({ productId }) => {
+  const router = useRouter();
+  const { data } = trpc.getProduct.useQuery(productId);
+  const product = data!;
+
+  const { data: products } = trpc.getTodos.useQuery();
+  const { data: authUser, error: authUserError } = trpc.getAuthUser.useQuery();
+  const userId: string | undefined = authUser?.success
+    ? authUser.user.id
+    : undefined;
+  const { data: user } = trpc.getUser.useQuery(userId!, { enabled: !!userId });
+
   const addToCart = () => {
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
     if (
@@ -26,14 +63,49 @@ export const ProductListingPage: FC<{
       toast.success("added");
     }
   };
+  const addToPayment = (free: boolean) => {
+    if (
+      (user &&
+        user.bought_products.find(
+          (boughtProduct) => boughtProduct === product.id
+        )) ||
+      free
+    ) {
+      const downloadFile = async (product: RouterOutput["getProduct"]) => {
+        const response = await fetch(product.image[0]);
+        const blob = await response.blob();
+        const link = document.createElement("a");
+        const objectUrl = URL.createObjectURL(blob);
+        link.href = objectUrl;
+        link.download = `${product.title}.png`;
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(objectUrl);
+        document.body.removeChild(link);
+      };
+      downloadFile(product);
+    } else {
+      localStorage.setItem("cart", JSON.stringify(Array(product)));
+      router.push("/cart?toPayment=true");
+    }
+  };
+
   const prod: {
     formats: string[];
     ID: string;
     softwares: string[];
+    shapes: { image: string; title: string; key: string; desc: string }[];
+    assets: { image: string; title: string; key: string }[];
   } = {
-    formats: [".eps", ".obj"],
-    ID: "13fiomoasfj-11ad",
-    softwares: ["/blender.png", "/ps.png"],
+    formats: product.formats,
+    ID: product.id,
+    softwares: product.software,
+    shapes: product.shapes.map((element) => {
+      return shapesTable.find(($element) => $element.key === element)!;
+    }),
+    assets: product.assets.map((element) => {
+      return assetsTable.find(($element) => $element.key === element)!;
+    }),
   };
   return (
     <div className="mb-28">
@@ -52,7 +124,7 @@ export const ProductListingPage: FC<{
             <h1 className="text-3xl tracking-widest">Back</h1>
           </div>
           <p className="text-2xl mt-5">
-            Home/Categories/3D-Model/Product-Name-Lorem-Ipsum
+            Home/Categories/3D-Model/{product.title}
           </p>
         </div>
         <div className="mx-[5%] mt-10">
@@ -61,18 +133,17 @@ export const ProductListingPage: FC<{
         <div className="flex flex-col xl:flex-row xl:justify-between mx-[5%] justify-center align-center ">
           <ProductDescription
             addToCart={addToCart}
-            rating={product.rating}
-            title={product.title}
-            date={product.date}
-            author={product.author}
-            tags={product.tags}
-            description={product.description}
+            addToPayment={addToPayment}
+            product={product}
+            user={user}
           ></ProductDescription>
           <div className="w-full xl:w-[47.5%] h-full">
             <ProductFormats
               formats={prod.formats}
               ID={prod.ID}
               softwares={prod.softwares}
+              shapes={prod.shapes}
+              assets={prod.assets}
             ></ProductFormats>
             <div className="hidden sm:flex space-x-3 mt-12">
               <Image src="/barcode.png" alt="" width={345} height={154}></Image>
@@ -90,7 +161,7 @@ export const ProductListingPage: FC<{
             Personally Picked from your taste and by spying on you.
           </p>
         </div>
-        <Recommendations categs={recs1}></Recommendations>
+        <Recommendations categs={products}></Recommendations>
       </div>
     </div>
   );

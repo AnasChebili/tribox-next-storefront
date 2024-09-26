@@ -1,9 +1,3 @@
-import Recommendations from "@/components/recommendations";
-import recs1 from "../../../../data/reccomendations.json";
-import ProductDescription from "@/components/product-description";
-import ProductFormats from "@/components/product-formats";
-import Image from "next/image";
-import { trpcServer } from "@/server/trpc";
 import { appRouter, RouterOutput } from "@/server";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { ProductListingPage } from "./ProductListingPage";
@@ -19,10 +13,15 @@ export default async function ProductListing({
   const productId = params.id;
 
   const product = await helpers.getProduct.fetch(productId);
+  const products = await helpers.getTodos.fetch();
+  try {
+    const authUser = await helpers.getAuthUser.fetch();
+    const user = await helpers.getUser.fetch(authUser.user.id);
+  } catch (error) {}
 
   return (
     <Hydrate state={dehydrate(helpers.queryClient)}>
-      <ProductListingPage product={product} />
+      <ProductListingPage productId={productId} />
     </Hydrate>
   );
 }

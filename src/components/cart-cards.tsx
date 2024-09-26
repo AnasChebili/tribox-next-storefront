@@ -17,14 +17,15 @@ export default function CartCards({
       {categs.map((categ) => (
         <div key={categ.id} className="min-w-64 max-w-[250px]">
           <CartCard
-            image={categ.image[0]}
+            /* image={categ.image[0]}
             rating={categ.rating}
             title={categ.title}
             date={categ.date}
             author={categ.author}
             tags={categ.tags}
             description={categ.description}
-            id={categ.id}
+            id={categ.id} */
+            product={categ}
             removeCard={removeCard}
           ></CartCard>
         </div>

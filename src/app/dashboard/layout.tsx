@@ -29,7 +29,8 @@ export default async function DashboardLayout({
       ctx: ctx,
     });
 
-    await helpers.getAuthUser.prefetch();
+    const authUser = await helpers.getAuthUser.fetch();
+    await helpers.getUser.prefetch(authUser.user.id);
   } catch (error) {
     redirect("/login");
   }
@@ -43,7 +44,7 @@ export default async function DashboardLayout({
 
         <div className=" lg:flex-1 flex h-[calc(100%-146px)] mx-[5%] relative">
           <SidePanel></SidePanel>
-          <div className="lg:ml-[324px] lg:flex-1 h-full overflow-y-auto">
+          <div className="xl:ml-[324px] lg:flex-1 h-full overflow-y-auto mt-5">
             {children}
           </div>
         </div>

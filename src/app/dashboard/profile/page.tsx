@@ -16,12 +16,12 @@ export default async function PrivatePage() {
   }
 
   return (
-    <div className=" text-white  px-14">
+    <div className=" text-white  lg:px-14">
       <div className="w-full flex justify-between">
         <div className="flex items-center">
           <div className="mb-4">
             <Image
-              src={user.image}
+              src={user.image != "" ? user.image : "/anonymous-avatar.png"}
               alt=""
               width={200}
               height={200}
