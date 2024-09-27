@@ -18,7 +18,6 @@ export default function Settings() {
       router.push("/login");
     },
     onError: (error) => {
-      // alert("Failed to log out");
       toast.error("Failed to log out");
     },
   });
@@ -44,7 +43,7 @@ export default function Settings() {
                 alt=""
                 width={100}
                 height={100}
-                className="object-cover"
+                className="object-cover min-w-[100px] min-h-[100px]"
               />
             </div>
           )}

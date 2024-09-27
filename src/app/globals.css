@@ -93,3 +93,16 @@ input::file-selector-button {
 input[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
+
+[data-uppy-theme=dark] .uppy-Dashboard-inner {
+  @apply !bg-gray-900 !border-gray-800
+}
+[data-uppy-theme=dark] .uppy-Dashboard-AddFiles {
+  @apply !border-0
+}
+.uppy-Dashboard-AddFiles-info {
+  @apply !hidden
+}
+[data-uppy-theme=dark] .uppy-Dashboard-browse {
+  @apply !text-red-500
+}

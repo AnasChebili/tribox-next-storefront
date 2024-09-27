@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
 
 export const registerFormSchema = z
   .object({
@@ -34,6 +35,7 @@ export const registerFormSchema = z
 export type RegisterForm = z.infer<typeof registerFormSchema>;
 
 export default function Home() {
+  const router = useRouter();
   const [emailMessage, setEmailMessage] = useState(false);
   const {
     formState: { errors, isSubmitting },
@@ -60,6 +62,7 @@ export default function Home() {
         else if (result?.data) {
           toast.success(result.data);
           setEmailMessage(true);
+          router.push("/on-boarding");
         }
       })}
       className="my-[30%] lg:w-[50%]  px-4 lg:px-0 mx-auto"
@@ -153,18 +156,6 @@ export default function Home() {
           <p className="text-xs text-red-500">
             {errors.confirmPassword.message}
           </p>
-        )}
-
-        {emailMessage && (
-          <div className="mt-10">
-            <h1 className="font-bold text-4xl font-serif">
-              We sent you a confirmation Email!
-            </h1>
-            <p className="text-xs w-2/3 mt-2">
-              Check your email inbox and click on the confirmation link to
-              complete your sign up!
-            </p>
-          </div>
         )}
 
         <button

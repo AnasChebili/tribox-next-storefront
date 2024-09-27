@@ -17,7 +17,7 @@ export default async function User({ params }: { params: { id: string } }) {
                   alt=""
                   width={200}
                   height={200}
-                  className="object-cover"
+                  className="object-cover min-w-[200px] min-h-[200px]"
                 ></Image>
               </div>
               <div className="text-center mb-4 flex flex-col items-start ml-5">

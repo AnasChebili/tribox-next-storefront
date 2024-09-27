@@ -76,7 +76,7 @@ const Cart = ({ toPaymentBool }: { toPaymentBool: boolean }) => {
           },
           onError: (error) => {
             setIsLoading(false);
-            alert(`Error adding order:${error}`);
+            toast.error(`Error adding order:${error}`);
           },
         }
       );

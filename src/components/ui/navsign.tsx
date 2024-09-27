@@ -39,7 +39,7 @@ export default async function NavSign() {
                     alt=""
                     width={50}
                     height={50}
-                    className="object-cover"
+                    className="object-cover min-h-[50px] min-w-[50px]"
                   ></Image>
                 </div>
               </DropdownMenuTrigger>

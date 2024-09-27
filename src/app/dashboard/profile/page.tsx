@@ -1,5 +1,4 @@
 import { redirect, useRouter } from "next/navigation";
-import { logout } from "@/app/(auth)/logout/actions";
 import Image from "next/image";
 import SidePanel from "@/components/sidepanel";
 import Works from "@/components/works";
@@ -25,7 +24,7 @@ export default async function PrivatePage() {
               alt=""
               width={200}
               height={200}
-              className="object-cover"
+              className="object-cover min-w-[200px] min-h-[200px]"
             ></Image>
           </div>
           <div className="text-center mb-4 flex flex-col items-start ml-5">

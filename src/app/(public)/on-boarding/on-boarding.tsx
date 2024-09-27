@@ -27,9 +27,9 @@ export default function OnBoarding() {
     enabled: !!authUser,
   });
 
-  const [imageState, setImageState] = useState<string>("/avatar.svg");
+  const [imageState, setImageState] = useState<string>("/anonymous-avatar.png");
 
-  const [imageId, setImageId] = useState<string>("anonymous-avatar.png");
+  const [imageId, setImageId] = useState<string>("");
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -57,7 +57,7 @@ export default function OnBoarding() {
   const { register, handleSubmit, reset } = useForm({
     values: {
       username: "",
-      email: authUser!.user!.id,
+      email: authUser!.user!.email,
       name: "",
       bio: "",
     },
@@ -85,12 +85,9 @@ export default function OnBoarding() {
       .upload(img, file);
 
     if (error) {
-      alert("Error uploading file.");
       console.log(error);
       return;
     }
-
-    alert("File uploaded successfully!");
   };
 
   const addData = (values: {
@@ -124,6 +121,9 @@ export default function OnBoarding() {
             })}
             className="space-y-4 "
           >
+            <label className="block text-sm font-medium text-gray-700 ">
+              Profile Picture
+            </label>
             <div className="flex gap-4 items-center">
               <Image
                 src={imageState}

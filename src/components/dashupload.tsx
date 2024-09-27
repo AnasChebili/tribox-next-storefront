@@ -22,6 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import FileUpload from "./file-upload";
 
 const tagsTableList = tagsTable.map((tag, index) => ({
   value: tag.key,
@@ -159,12 +160,9 @@ export default function DashUpload() {
     const { error } = await supabase.storage.from(bucket).upload(imageId, file);
 
     if (error) {
-      alert("Error uploading file.");
       console.log(error);
       return;
     }
-
-    alert("File uploaded successfully!");
   };
 
   const uploadData = (values: z.infer<typeof UploadProductSchema>) => {
@@ -217,13 +215,15 @@ export default function DashUpload() {
                     <div key={`${index}`}>
                       <div className="flex gap-4 items-center mb-2">
                         {imageState?.[index] && (
-                          <Image
-                            src={imageState[index]}
-                            alt=""
-                            height={50}
-                            width={50}
-                            className="rounded-full"
-                          ></Image>
+                          <div className="w-[50px] h-[50px]">
+                            <Image
+                              src={imageState[index]}
+                              alt=""
+                              height={50}
+                              width={50}
+                              className="w-full h-full object-cover rounded-full"
+                            ></Image>
+                          </div>
                         )}
                         <ImageUpload
                           onChange={(event) => uploadFile(event, index)}
@@ -409,6 +409,12 @@ export default function DashUpload() {
                 />
                 <p className="text-xs text-red-500">{errors.price?.message}</p>
               </div>
+
+              <label className="block text-sm font-medium text-gray-700">
+                Product File
+              </label>
+
+              <FileUpload></FileUpload>
 
               <div className="flex justify-end">
                 <DialogClose asChild>

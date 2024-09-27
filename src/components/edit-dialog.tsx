@@ -238,12 +238,9 @@ export default function EditDialog({
     const { error } = await supabase.storage.from(bucket).upload(imageId, file);
 
     if (error) {
-      alert("Error uploading file.");
       console.log(error);
       return;
     }
-
-    alert("File uploaded successfully!");
   };
 
   const uploadData = (values: z.infer<typeof UpdateProductSchema>) => {

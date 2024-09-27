@@ -77,12 +77,9 @@ export default function UserDialog() {
       .upload(imageUrl, file);
 
     if (error) {
-      alert("Error uploading file.");
       console.log(error);
       return;
     }
-
-    alert("File uploaded successfully!");
   };
 
   const uploadData = (values: {
