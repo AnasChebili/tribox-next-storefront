@@ -19,13 +19,13 @@ export default async function PrivatePage() {
     <div className=" text-white  lg:px-14">
       <div className="w-full flex justify-between">
         <div className="flex items-center">
-          <div className="mb-4">
+          <div className="mb-4 w-[200px] h-[200px] justify-center items-center cursor-pointer rounded-full overflow-hidden">
             <Image
               src={user.image != "" ? user.image : "/anonymous-avatar.png"}
               alt=""
               width={200}
               height={200}
-              className="cursor-pointer rounded-full"
+              className="object-cover"
             ></Image>
           </div>
           <div className="text-center mb-4 flex flex-col items-start ml-5">

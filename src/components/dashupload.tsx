@@ -168,13 +168,6 @@ export default function DashUpload() {
   };
 
   const uploadData = (values: z.infer<typeof UploadProductSchema>) => {
-    console.log({
-      ...values,
-      image: values.image.map((e) => e.id),
-      rating: 4,
-      auth_Id: user!.id,
-      author: user!.name || "",
-    });
     addTodoMutation.mutate({
       ...values,
       image: values.image.map((e) => e.id),

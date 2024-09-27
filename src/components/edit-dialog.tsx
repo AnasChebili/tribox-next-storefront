@@ -90,7 +90,6 @@ export default function EditDialog({
 
   const updateProductMutation = trpc.updateProduct.useMutation({
     onSuccess: () => {
-      console.log("Todo added successfully!");
       utils.invalidate(undefined, { queryKey: getQueryKey(trpc.getProduct) });
     },
     onError: (error) => {
@@ -143,8 +142,6 @@ export default function EditDialog({
       return [];
     }
   }, [product]);
-  console.log(defaultTags);
-
   const defaultFormats = useMemo<string[]>(() => {
     if (product) {
       return product.formats;
@@ -152,7 +149,6 @@ export default function EditDialog({
       return [];
     }
   }, [product]);
-  console.log(defaultFormats);
 
   const defaultSoftware = useMemo<string[]>(() => {
     if (product) {
@@ -251,12 +247,6 @@ export default function EditDialog({
   };
 
   const uploadData = (values: z.infer<typeof UpdateProductSchema>) => {
-    console.log({
-      ...values,
-      image: values.image.map((e) => e.id),
-      rating: 0,
-      author: user!.name || "",
-    });
     updateProductMutation.mutate({
       id: product!.id,
       data: {
@@ -287,8 +277,6 @@ export default function EditDialog({
             <DialogTitle>Update Product</DialogTitle>
             <form
               onSubmit={handleSubmit((values) => {
-                console.log(values);
-
                 uploadData(values as z.infer<typeof UpdateProductSchema>);
                 setOpen(false);
               })}

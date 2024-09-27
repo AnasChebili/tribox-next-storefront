@@ -42,14 +42,9 @@ const Cart = ({ toPaymentBool }: { toPaymentBool: boolean }) => {
   }, [cartItems, toPaymentBool]);
 
   const removeCard = (id: string) => {
-    console.log(cartItems);
-
     const cart = cartItems.filter(
       (item: RouterOutput["getProduct"]) => item.id !== id
     );
-
-    console.log(cart);
-
     localStorage.setItem("cart", JSON.stringify(cart));
     toast.success("removed from cart");
     setCartItems(cart);
@@ -60,13 +55,10 @@ const Cart = ({ toPaymentBool }: { toPaymentBool: boolean }) => {
     setCartItems([]);
   };
   const dispatch = useDispatch();
-  console.log(selector);
   const router = useRouter();
 
   const placeOrderMutation = trpc.placeOrder.useMutation();
   const checkOut = () => {
-    console.log("entered");
-
     if (authUser) {
       dispatch(setTotalAmount(total));
       dispatch(addAlltoCart(cartItems));

@@ -11,8 +11,6 @@ export default async function PaymentPage({
 }) {
   const clientSecret = searchParams.clientSecret;
   const orderId = searchParams.order;
-  console.log("========================", clientSecret, orderId);
-
   if (!clientSecret || !orderId) redirect("/");
 
   const order = await trpcServer.getOrder.query({ orderId: orderId });

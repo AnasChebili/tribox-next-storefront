@@ -1,6 +1,7 @@
 import Image from "next/image";
 import tagsTable from "@/data/tags-table.json";
 import { RouterOutput } from "@/server";
+import Rating from "./rating";
 
 export default function ProductDescription({
   addToCart,
@@ -18,9 +19,14 @@ export default function ProductDescription({
       <h1 className="text-7xl sm:text-[112px] leading-[100px]  font-ThickThinks break-words">
         {product.title}
       </h1>
-      <div className="flex py-3 px-5 rounded-md mt-12 bg-white text-black text-lg w-fit">
-        <p className="font-semibold text-3xl mr-2">{product.rating}</p>
-        <Image src="/Star 7.svg" alt="" width={25} height={25}></Image>
+      <div className="flex gap-5 mt-12">
+        <div className="flex py-3 px-5 rounded-md  bg-white text-black text-lg w-fit">
+          <p className="font-semibold text-3xl mr-2">{product.rating}</p>
+          <Image src="/Star 7.svg" alt="" width={25} height={25}></Image>
+        </div>
+        <div>
+          <Rating product={product} user={user}></Rating>
+        </div>
       </div>
       <div className="">
         <div className=" mt-3 flex justify-between">

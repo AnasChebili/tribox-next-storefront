@@ -16,34 +16,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  /* const headerList = headers();
-  const pathname = headerList.get("x-current-path");
-  console.log("=================", pathname);
-  const currentUrl = null;
-  if (currentUrl) {
-    const currentUrlArr = currentUrl?.split("/");
-    console.log("the current url");
-
-    console.log(
-      "the last url segment ===============================",
-      currentUrlArr[currentUrlArr?.length - 1]
-    );
-    if (currentUrlArr[currentUrlArr?.length - 1] !== "on-boarding") {
-      let redirectPath = null;
-      try {
-        const authUser = await trpcServer.getAuthUser.query();
-        const user = await trpcServer.getUser.query(authUser.user.id);
-
-        if (!user) {
-          redirectPath = "/on-boarding";
-        }
-      } catch (error) {
-      } finally {
-        if (redirectPath) redirect(redirectPath);
-      }
-    }
-  } */
-
   return (
     <html lang="en">
       <body>

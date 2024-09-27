@@ -38,13 +38,13 @@ export default function Settings() {
         </p>
         <div className="mb-4">
           {user && (
-            <div>
+            <div className="w-[100px] h-[100px] justify-center items-center cursor-pointer rounded-full overflow-hidden">
               <Image
                 src={user.image != "" ? user.image : "/anonymous-avatar.png"}
                 alt=""
                 width={100}
                 height={100}
-                className="cursor-pointer rounded-full"
+                className="object-cover"
               />
             </div>
           )}

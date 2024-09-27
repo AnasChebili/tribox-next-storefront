@@ -19,26 +19,22 @@ export default function Home() {
       </h1>
       <div className="mx-[5%]">
         <p>
-          DiBox is pretty cool. Like your ex-girlfriend saying that she’s not
-          like other girls, we’re also not like other asset stores. The only
-          difference is that we’re not lying and we actually care about you as a
-          designer. That’s why we collaborate with only the best artists in the
-          world. Our assets are completely free to use in your next big project.
-          We really do mean it when we say we love you.
+          Di-Box is pretty cool. We’re not like other asset stores. W’re not
+          lying and we actually care about you as a designer. That’s why we
+          collaborate with only the best artists in the world. Our assets are
+          completely free to use in your next big project. We really do mean it
+          when we say we love you.
         </p>
         <p className="mt-4">
           Of-course not, If only things were that simple. Every single asset
           that you see here is scrambled in one way or another. Design assets
-          have fucked up layers, 3-D assets are hidden under more polygons than
-          your mom can fit.
+          have messed up layers.
         </p>
         <p className="mt-4">
-          Overall, it’s a disaster. It’s your job to “fix” these assets like you
-          tried doing with your previous relationships and see if you are able
-          to. If you do, the asset is completely yours to use. Alternatively,
-          you can skip this entire mess and just pay directly to get the asset.
-          Yes, for once, there is an actual problem that can be solved with
-          money. See how it feels. For us, it will keep our servers running,
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ipsam
+          impedit consectetur dolorem dolore voluptate eaque blanditiis libero
+          suscipit. Ratione, doloremque expedita? Omnis modi facilis suscipit
+          nihil fugit consequatur. Veniam, iste!
         </p>
       </div>
       <div className="mx-[5%] my-10">
@@ -55,26 +51,22 @@ export default function Home() {
 
       <div className="mx-[5%] mt-14">
         <p>
-          DiBox is pretty cool. Like your ex-girlfriend saying that she’s not
-          like other girls, we’re also not like other asset stores. The only
-          difference is that we’re not lying and we actually care about you as a
-          designer. That’s why we collaborate with only the best artists in the
-          world. Our assets are completely free to use in your next big project.
-          We really do mean it when we say we love you.
+          Di-Box is pretty cool. We’re not like other asset stores. W’re not
+          lying and we actually care about you as a designer. That’s why we
+          collaborate with only the best artists in the world. Our assets are
+          completely free to use in your next big project. We really do mean it
+          when we say we love you.
         </p>
         <p className="mt-4">
           Of-course not, If only things were that simple. Every single asset
           that you see here is scrambled in one way or another. Design assets
-          have fucked up layers, 3-D assets are hidden under more polygons than
-          your mom can fit.
+          have messed up layers.
         </p>
         <p className="mt-4">
-          Overall, it’s a disaster. It’s your job to “fix” these assets like you
-          tried doing with your previous relationships and see if you are able
-          to. If you do, the asset is completely yours to use. Alternatively,
-          you can skip this entire mess and just pay directly to get the asset.
-          Yes, for once, there is an actual problem that can be solved with
-          money. See how it feels. For us, it will keep our servers running,
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ipsam
+          impedit consectetur dolorem dolore voluptate eaque blanditiis libero
+          suscipit. Ratione, doloremque expedita? Omnis modi facilis suscipit
+          nihil fugit consequatur. Veniam, iste!
         </p>
       </div>
       <div className="flex mx-[5%] my-24 justify-between items-center mb">

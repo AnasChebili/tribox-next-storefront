@@ -154,12 +154,8 @@ export const ProductListingPage: FC<{
         </div>
 
         <div className="my-11  ml-[5%]">
-          <h1 className="text-4xl font-bold ">
-            Stuff You Might Like (Allegedly)
-          </h1>
-          <p className="mt-2 font-light">
-            Personally Picked from your taste and by spying on you.
-          </p>
+          <h1 className="text-4xl font-bold ">Stuff You Might Like</h1>
+          <p className="mt-2 font-light">Personally Picked from your taste.</p>
         </div>
         <Recommendations categs={products}></Recommendations>
       </div>

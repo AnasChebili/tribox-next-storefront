@@ -14,6 +14,7 @@ import { Input } from "postcss";
 import { NextResponse } from "next/server";
 import { Database } from "../../database.types";
 import { Order } from "@stripe/stripe-js";
+import { error } from "console";
 
 const todoSchema = z.object({
   image: z.array(z.string()),
@@ -127,8 +128,6 @@ export const appRouter = router({
   getProduct: publicProcedure
     .input(z.string().uuid())
     .query(async ({ input }) => {
-      console.log(input);
-
       const supabase = createClient();
       const { data: products, error } = await supabase
         .from("products")
@@ -143,7 +142,6 @@ export const appRouter = router({
         });
 
       const product = products[0];
-      console.log("product", product);
 
       const promises = (product.image as string[]).map((supabaseImageUrl) =>
         trpcServer.getImage.query(supabaseImageUrl)
@@ -157,7 +155,6 @@ export const appRouter = router({
     .mutation(async ({ input }) => {
       const supabase = createClient();
       const response = await supabase.from("products").delete().eq("id", input);
-      console.log(response);
     }),
   updateProduct: publicProcedure
     .input(UpdateSchema)
@@ -217,11 +214,15 @@ export const appRouter = router({
   getUsers: publicProcedure.query(async () => {
     const supabase = createClient();
     const { data: users } = await supabase.from("users").select();
-    console.log("data");
 
-    console.log(users);
-
-    return users;
+    if (!users) throw error;
+    const promises = users.map(async (user, index) => {
+      if (user.image !== "")
+        user.image = await trpcServer.getImage.query(user.image);
+      return user;
+    });
+    const transformedUsers = await Promise.all(promises);
+    return transformedUsers;
   }),
   filterByTag: publicProcedure.input(z.string()).query(async ({ input }) => {
     const supabase = createClient();
@@ -312,6 +313,58 @@ export const appRouter = router({
         console.log(error);
         return { error: `internal server error: ${error}` };
       }
+    }),
+  addRating: publicProcedure
+    .input(
+      z.object({
+        rating: z.number(),
+        product: z.string().uuid(),
+        userId: z.string().uuid(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const supabase = createClient();
+      const product = await trpcServer.getProduct.query(input.product);
+      const ratingInfo = product.rating_info;
+
+      if (ratingInfo === null) {
+        const { data } = await supabase
+          .from("products")
+          .update({
+            rating_info: [{ rating: input.rating, user_id: input.userId }],
+            rating: input.rating,
+          })
+          .eq("id", input.product);
+        return;
+      }
+      if (ratingInfo.some((element) => element.user_id === input.userId)) {
+        const index = ratingInfo.findIndex(
+          (element) => element.user_id === input.userId
+        );
+        ratingInfo[index].rating = input.rating;
+        const { data } = await supabase
+          .from("products")
+          .update({
+            rating_info: ratingInfo,
+            rating: ratingInfo.reduce(
+              (sum: number, element) =>
+                (sum = sum + (element.rating || 0) / ratingInfo.length),
+              0
+            ),
+          })
+          .eq("id", input.product);
+        return;
+      }
+      ratingInfo.push({ rating: input.rating, user_id: input.userId });
+      const { data } = await supabase
+        .from("products")
+        .update({
+          rating_info: ratingInfo,
+          rating:
+            (product.rating * (ratingInfo.length - 1) + input.rating) /
+            ratingInfo.length,
+        })
+        .eq("id", input.product);
     }),
 });
 

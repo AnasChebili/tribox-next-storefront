@@ -25,7 +25,6 @@ export default function EditDrop({
   function handleDeleteProduct(id: string) {
     deleteProductMutation.mutate(id, {
       onSuccess: () => {
-        console.log("product Deleted Succefully");
         utils.invalidate(undefined, {
           queryKey: getQueryKey(trpc.getProduct),
         });

@@ -39,6 +39,9 @@ export type Database = {
           image: string[]
           price: number
           rating: number
+          rating_info:
+            | Database["public"]["CompositeTypes"]["rating_info"][]
+            | null
           shapes: string[]
           software: string[]
           tags: string[]
@@ -55,6 +58,9 @@ export type Database = {
           image: string[]
           price: number
           rating: number
+          rating_info?:
+            | Database["public"]["CompositeTypes"]["rating_info"][]
+            | null
           shapes?: string[]
           software?: string[]
           tags: string[]
@@ -71,6 +77,9 @@ export type Database = {
           image?: string[]
           price?: number
           rating?: number
+          rating_info?:
+            | Database["public"]["CompositeTypes"]["rating_info"][]
+            | null
           shapes?: string[]
           software?: string[]
           tags?: string[]
@@ -125,7 +134,10 @@ export type Database = {
       [_ in never]: never
     }
     CompositeTypes: {
-      [_ in never]: never
+      rating_info: {
+        rating: number | null
+        user_id: string | null
+      }
     }
   }
 }

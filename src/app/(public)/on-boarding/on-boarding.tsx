@@ -39,11 +39,9 @@ export default function OnBoarding() {
 
   function handleAddTodo(data: RouterInput["addUser"]) {
     setIsLoading(true);
-    console.log(data);
 
     addUserMutation.mutate(data, {
       onSuccess: () => {
-        console.log("Todo added successfully!");
         utils.invalidate(undefined, {
           queryKey: getQueryKey(trpc.getUser),
         });
@@ -86,8 +84,6 @@ export default function OnBoarding() {
       .from(bucket)
       .upload(img, file);
 
-    console.log("imageid:", imageId);
-
     if (error) {
       alert("Error uploading file.");
       console.log(error);
@@ -103,15 +99,11 @@ export default function OnBoarding() {
     name: string;
     bio: string;
   }) => {
-    console.log(imageId);
-
     const data = {
       ...values,
       id: authUser!.user.id,
       image: imageId,
     };
-
-    console.log(data);
     handleAddTodo(data);
 
     reset();

@@ -19,7 +19,7 @@ export default async function NavSign() {
     // @ts-expect-error
     signedIn = authUser?.name !== "AuthSessionMissingError";
   } catch (error) {
-    console.log("error========================", error);
+    console.log("error", error);
 
     signedIn = false;
   }
@@ -31,13 +31,17 @@ export default async function NavSign() {
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger className="border-0">
-                <Image
-                  src={user.image != "" ? user.image : "/anonymous-avatar.png"}
-                  alt=""
-                  width={50}
-                  height={50}
-                  className="cursor-pointer rounded-full"
-                ></Image>
+                <div className="h-[50px] w-[50px] justify-center items-center cursor-pointer rounded-full overflow-hidden">
+                  <Image
+                    src={
+                      user.image != "" ? user.image : "/anonymous-avatar.png"
+                    }
+                    alt=""
+                    width={50}
+                    height={50}
+                    className="object-cover"
+                  ></Image>
+                </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-black text-white border-0  p-2">
                 <DropdownMenuItem className="py-2 px-6 rounded-lg cursor-pointer">

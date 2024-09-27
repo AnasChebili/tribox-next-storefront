@@ -34,7 +34,6 @@ export default function UserDialog() {
   function handleAddTodo(data: RouterInput["updateUser"]) {
     updateUserMutation.mutate(data, {
       onSuccess: () => {
-        console.log("Todo added successfully!");
         utils.invalidate(undefined, {
           queryKey: getQueryKey(trpc.getUser),
         });
@@ -100,7 +99,6 @@ export default function UserDialog() {
       },
     };
 
-    console.log(data);
     handleAddTodo(data);
 
     reset();

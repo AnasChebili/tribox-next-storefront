@@ -3,8 +3,6 @@ import { updateSession } from "../utils/supabase/middleware";
 import { trpcServer } from "@/server/trpc";
 
 export async function middleware(request: NextRequest) {
-  console.log("middleware========================================");
-
   let redirectPath = null;
   try {
     const authUser = await trpcServer.getAuthUser.query();

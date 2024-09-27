@@ -9,8 +9,6 @@ export default async function PaymentSuccessPage({
 }: {
   searchParams: { orderId: string };
 }) {
-  console.log("orderId=============", orderId);
-
   const order = await trpcServer.getOrder.query({ orderId: orderId });
 
   if (!order) redirect("/");

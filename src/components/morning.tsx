@@ -12,7 +12,7 @@ export default function Morning({ user }: { user: RouterOutput["getUser"] }) {
         </div>
         <div className="h-1/3 bg-yellow-600 opacity-80">
           <p className=" hidden xl:block w-1/2 font-light pl-10 tracking-widest text-lg">
-            Welcome to Tri-Box. What will you like to do today? You beautiful
+            Welcome to Di-Box. What will you like to do today? You beautiful
             human being.
           </p>
         </div>

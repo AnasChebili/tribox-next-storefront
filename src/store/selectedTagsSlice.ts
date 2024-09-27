@@ -15,9 +15,6 @@ const selectedTagsSlice = createSlice({
       state = state.filter((item) => item === action.payload);
     },
     setSelectedTags: (state, action) => {
-      console.log(state);
-      console.log(action.payload);
-
       state = action.payload;
     },
   },
