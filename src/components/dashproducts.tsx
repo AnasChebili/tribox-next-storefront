@@ -16,7 +16,7 @@ export default function DashProducts() {
       <div className="my-11  ml-[5%]">
         <h1 className="text-4xl font-bold">Your Products</h1>
         <p className="mt-2 font-light w-1/2">
-          Click on "Add Product" to add a product!
+          Click on &apos;Add Product&apos; to add a product!
         </p>
       </div>
       {products ? (

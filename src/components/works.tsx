@@ -68,7 +68,7 @@ export default function Works({
         {works ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-28">
             {works.map((work, index) => (
-              <WorkCard product={work}></WorkCard>
+              <WorkCard key={index} product={work}></WorkCard>
             ))}
           </div>
         ) : (

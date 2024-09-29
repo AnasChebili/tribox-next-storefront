@@ -79,7 +79,7 @@ export default function Navbar() {
             <div className=" space-y-10 text-white p-5">
               <div className=" flex flex-col items-start h-full gap-8 text-2xl  ">
                 {links.map((element, index) => (
-                  <SheetClose asChild>
+                  <SheetClose key={index} asChild>
                     <Link
                       href={element.link}
                       className="flex gap-2 items-center"
