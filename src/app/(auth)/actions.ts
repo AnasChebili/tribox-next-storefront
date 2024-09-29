@@ -3,8 +3,29 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "../../../utils/supabase/server";
-import { RegisterForm } from "./register/page";
 import { z } from "zod";
+
+const registerFormSchema = z
+  .object({
+    email: z
+      .string()
+      .min(1, "Please enter email")
+      .email("Please enter a valid email"),
+    password: z
+      .string()
+      .min(1, "Please enter password")
+      .min(8, "Password cannot be less than 8 characters"),
+    confirmPassword: z
+      .string()
+      .min(1, "Please enter password")
+      .min(8, "Password cannot be less than 8 characters"),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+type RegisterForm = z.infer<typeof registerFormSchema>;
 
 const loginFormSchema = z.object({
   email: z
