@@ -12,7 +12,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
 
-export const loginFormSchema = z.object({
+const loginFormSchema = z.object({
   email: z
     .string()
     .min(1, "Please enter email")
@@ -20,7 +20,7 @@ export const loginFormSchema = z.object({
   password: z.string().min(1, "Please enter password"),
 });
 
-export type LoginForm = z.infer<typeof loginFormSchema>;
+type LoginForm = z.infer<typeof loginFormSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
