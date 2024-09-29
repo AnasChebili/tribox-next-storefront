@@ -1,13 +1,15 @@
 import { inferAsyncReturnType, initTRPC, TRPCError } from "@trpc/server";
 // utils/trpc-server.ts
 import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
-import { AppRouter, RouterOutput } from ".";
+import { AppRouter, createCaller, RouterOutput } from ".";
 import { createClient } from "../../utils/supabase/server";
 import { headers } from "next/headers";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import cookie from "cookie";
 import { createAdminContext } from "./trpc-contexts";
+import superjson from "superjson";
+import { ZodError } from "zod";
 
 /* export const createContext = async ({ req }: FetchCreateContextFnOptions) => {
   const supabase = createClient();
@@ -33,7 +35,19 @@ export const createContext = async ({ req }: FetchCreateContextFnOptions) => {
 
 export type Context = inferAsyncReturnType<typeof createContext>;
 
-export const t = initTRPC.create();
+export const t = initTRPC.create({
+  transformer: superjson,
+  errorFormatter({ shape, error }) {
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        ZodError:
+          error.cause instanceof ZodError ? error.cause.flatten() : null,
+      },
+    };
+  },
+});
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
@@ -49,6 +63,8 @@ export const adminProcedure = privateProcedure.use(async ({ ctx, next }) => {
   }
 });
 
+export const createCallerFactory = t.createCallerFactory;
+/* 
 export const trpcServer = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
@@ -61,3 +77,6 @@ export const trpcServer = createTRPCProxyClient<AppRouter>({
     }),
   ],
 });
+ */
+
+export const trpcServer = createCaller(createContext);

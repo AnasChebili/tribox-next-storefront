@@ -1,6 +1,7 @@
 import { createClient } from "../../utils/supabase/server";
 import {
   adminProcedure,
+  createCallerFactory,
   privateProcedure,
   publicProcedure,
   router,
@@ -8,12 +9,8 @@ import {
 } from "./trpc";
 import { z } from "zod";
 import { inferRouterInputs, inferRouterOutputs, TRPCError } from "@trpc/server";
-import { cookies } from "next/headers";
 import convertToSubcurrency from "@/lib/convertToSubcurrency";
-import { Input } from "postcss";
-import { NextResponse } from "next/server";
 import { Database } from "../../database.types";
-import { Order } from "@stripe/stripe-js";
 import { error } from "console";
 
 const todoSchema = z.object({
@@ -89,7 +86,7 @@ export const appRouter = router({
         trpcServer.getImage.query(supabaseImageUrl)
       );
       product.image = await Promise.all(promises);
-      product.file = await trpcServer.getImage.query(product.file);
+      // product.file = await trpcServer.getImage.query(product.file);
       return product;
     });
     const transformedProducts = await Promise.all(promises);
@@ -389,6 +386,8 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
+
+export const createCaller = createCallerFactory(appRouter);
 
 export type RouterOutput = inferRouterOutputs<AppRouter>;
 export type RouterInput = inferRouterInputs<AppRouter>;
