@@ -73,7 +73,7 @@ const UserAddSchema = z.object({
 });
 
 export const appRouter = router({
-  getTodos: adminProcedure.query(async ({ ctx }) => {
+  getTodos: publicProcedure.query(async ({ ctx }) => {
     const supabase = createClient();
     const { data: products, error } = await supabase.from("products").select();
 
