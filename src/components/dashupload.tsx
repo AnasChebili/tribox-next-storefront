@@ -23,6 +23,7 @@ import { z } from "zod";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import FileUpload from "./file-upload";
+import { Spinner } from "./ui/spinner";
 
 const tagsTableList = tagsTable.map((tag, index) => ({
   value: tag.key,
@@ -69,6 +70,7 @@ const UploadProductSchema = z.object({
     .number({ message: "Please set a valid price" })
     .int()
     .min(1, "Please set a valid price"),
+  file: z.string().min(1, "Please upload the product file"),
 });
 
 export default function DashUpload() {
@@ -80,6 +82,7 @@ export default function DashUpload() {
 
   const { data: user } = trpc.getUser.useQuery(authUser!.user.id); //if authUser was undefined, user would have been redirected in layout
 
+  const [isLoading, setIsLoading] = useState(false);
   const addTodoMutation = trpc.addTodo.useMutation({
     onSuccess: async () => {
       await utils.invalidate(undefined, {
@@ -87,9 +90,11 @@ export default function DashUpload() {
       });
       reset();
       setOpen(false);
+      setIsLoading(false);
     },
     onError: (error) => {
       console.error("Error adding todo:", error);
+      setIsLoading(false);
     },
   });
 
@@ -123,6 +128,7 @@ export default function DashUpload() {
         id: string | undefined;
       }[],
       price: 0,
+      file: "",
     },
     resolver: zodResolver(UploadProductSchema),
     mode: "onChange",
@@ -166,6 +172,7 @@ export default function DashUpload() {
   };
 
   const uploadData = (values: z.infer<typeof UploadProductSchema>) => {
+    setIsLoading(true);
     addTodoMutation.mutate({
       ...values,
       image: values.image.map((e) => e.id),
@@ -410,11 +417,18 @@ export default function DashUpload() {
                 <p className="text-xs text-red-500">{errors.price?.message}</p>
               </div>
 
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                className={cn("block text-sm font-medium text-gray-700", {
+                  "text-red-500": errors.file,
+                })}
+              >
                 Product File
               </label>
 
-              <FileUpload></FileUpload>
+              <FileUpload
+                setFile={(file: string) => setValue("file", file)}
+              ></FileUpload>
+              <p className="text-xs text-red-500">{errors.file?.message}</p>
 
               <div className="flex justify-end">
                 <DialogClose asChild>
@@ -426,10 +440,12 @@ export default function DashUpload() {
                   </button>
                 </DialogClose>
                 <button
+                  disabled={isLoading}
                   type="submit"
-                  className="px-4 py-2 bg-white text-black font-bold rounded-md"
+                  className="px-4 py-2 bg-white text-black font-bold rounded-md disabled:opacity-50 flex items-center gap-2"
                 >
                   Submit
+                  {isLoading && <Spinner className="w-5 h-5"></Spinner>}
                 </button>
               </div>
             </form>

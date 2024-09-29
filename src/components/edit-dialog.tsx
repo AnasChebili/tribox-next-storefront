@@ -22,6 +22,8 @@ import { boolean, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MultiSelect } from "./multi-select";
 import { cn } from "@/lib/utils";
+import FileUpload from "./file-upload";
+import { Spinner } from "./ui/spinner";
 
 const tagsTableList = tagsTable.map((tag, index) => ({
   value: tag.key,
@@ -68,6 +70,7 @@ const UpdateProductSchema = z.object({
     .number({ message: "Please set a valid price" })
     .int()
     .min(1, "Please set a valid price"),
+  file: z.string().min(1, "Please upload product file"),
 });
 
 export default function EditDialog({
@@ -88,12 +91,20 @@ export default function EditDialog({
 
   const { data: user } = trpc.getUser.useQuery(authUser!.user.id); //if authUser was undefined, user would have been redirected in layout
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const updateProductMutation = trpc.updateProduct.useMutation({
-    onSuccess: () => {
-      utils.invalidate(undefined, { queryKey: getQueryKey(trpc.getProduct) });
+    onSuccess: async () => {
+      await utils.invalidate(undefined, {
+        queryKey: getQueryKey(trpc.getProduct),
+      });
+      reset();
+      setOpen(false);
+      setIsLoading(false);
     },
     onError: (error) => {
       console.error("Error adding todo:", error);
+      setIsLoading(false);
     },
   });
 
@@ -204,6 +215,7 @@ export default function EditDialog({
           )
         : [],
       price: product?.price,
+      file: product?.file,
     },
     resolver: zodResolver(UpdateProductSchema),
     mode: "onChange",
@@ -244,6 +256,7 @@ export default function EditDialog({
   };
 
   const uploadData = (values: z.infer<typeof UpdateProductSchema>) => {
+    setIsLoading(true);
     updateProductMutation.mutate({
       id: product!.id,
       data: {
@@ -487,6 +500,19 @@ export default function EditDialog({
                 <p className="text-xs text-red-500">{errors.price?.message}</p>
               </div>
 
+              <label
+                className={cn("block text-sm font-medium text-gray-700", {
+                  "text-red-500": errors.file,
+                })}
+              >
+                Product File
+              </label>
+
+              <FileUpload
+                setFile={(file: string) => setValue("file", file)}
+              ></FileUpload>
+              <p className="text-xs text-red-500">{errors.file?.message}</p>
+
               <div className="flex justify-end">
                 <DialogClose asChild>
                   <button
@@ -497,10 +523,12 @@ export default function EditDialog({
                   </button>
                 </DialogClose>
                 <button
+                  disabled={isLoading}
                   type="submit"
-                  className="px-4 py-2 bg-white text-black font-bold rounded-md"
+                  className="px-4 py-2 bg-white text-black font-bold rounded-md disabled:opacity-50 flex items-center gap-2"
                 >
                   Submit
+                  {isLoading && <Spinner className="w-5 h-5"></Spinner>}
                 </button>
               </div>
             </form>

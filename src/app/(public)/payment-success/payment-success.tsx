@@ -15,12 +15,13 @@ export default function PaymentSuccess({
   useEffect(() => {
     const downloadFile = async (product: RouterOutput["getProduct"]) => {
       if (!hasDownloaded.current) {
-        const response = await fetch(product.image[0]);
+        const response = await fetch(product.file);
         const blob = await response.blob();
         const link = document.createElement("a");
         const objectUrl = URL.createObjectURL(blob);
+        const fileExtension = product.file.split(".").pop(); // Get the file extension
         link.href = objectUrl;
-        link.download = `${product.title}.png`;
+        link.download = `${product.title}.${fileExtension || "file"}`; // Use the correct extension or fallback to "file"
         document.body.appendChild(link);
         link.click();
         URL.revokeObjectURL(objectUrl);

@@ -4,7 +4,7 @@ import ProductDescription from "@/components/product-description";
 import ProductFormats from "@/components/product-formats";
 import Recommendations from "@/components/recommendations";
 import Image from "next/image";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { trpc } from "@/app/_trpc/client";
 import { RouterOutput } from "@/server";
 import { toast } from "sonner";
@@ -51,6 +51,10 @@ export const ProductListingPage: FC<{
     : undefined;
   const { data: user } = trpc.getUser.useQuery(userId!, { enabled: !!userId });
 
+  const [cartCount, setCartCount] = useState(
+    JSON.parse(localStorage.getItem("cart") || "[]").length
+  );
+
   const addToCart = () => {
     let cart = JSON.parse(localStorage.getItem("cart") || "[]");
     if (
@@ -61,6 +65,7 @@ export const ProductListingPage: FC<{
       cart.push(product);
       localStorage.setItem("cart", JSON.stringify(cart));
       toast.success("added");
+      setCartCount(JSON.parse(localStorage.getItem("cart") || "[]").length);
     }
   };
   const addToPayment = (free: boolean) => {
@@ -136,6 +141,7 @@ export const ProductListingPage: FC<{
             addToPayment={addToPayment}
             product={product}
             user={user}
+            cartCount={cartCount}
           ></ProductDescription>
           <div className="w-full xl:w-[47.5%] h-full">
             <ProductFormats

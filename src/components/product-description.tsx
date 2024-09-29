@@ -8,11 +8,13 @@ export default function ProductDescription({
   addToPayment,
   product,
   user,
+  cartCount,
 }: {
   addToCart: () => void;
   addToPayment: (free: boolean) => void;
   product: RouterOutput["getProduct"];
   user: RouterOutput["getUser"] | undefined;
+  cartCount: number;
 }) {
   return (
     <div className=" mt-20  cursor-pointer w-full xl:w-[47.5%]">
@@ -94,7 +96,7 @@ export default function ProductDescription({
             <div className="relative">
               <div className="absolute h-5 w-5 rounded-full bg-red-500 top-0 right-0 z-0"></div>
               <div className="absolute top-[-1px] right-[13px] z-10 text-sm h-0 w-0">
-                {JSON.parse(localStorage.getItem("cart") || "[]").length}
+                {cartCount}
               </div>
               <Image src="/cart.svg" alt="" width={50} height={50}></Image>
             </div>

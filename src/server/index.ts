@@ -29,6 +29,7 @@ const todoSchema = z.object({
   description: z.string(),
   price: z.number(),
   author_id: z.string().uuid(),
+  file: z.string(),
 });
 
 const UpdateSchema = z.object({
@@ -45,6 +46,7 @@ const UpdateSchema = z.object({
     assets: z.array(z.string()),
     description: z.string(),
     price: z.number(),
+    file: z.string(),
   }),
 });
 
@@ -87,6 +89,7 @@ export const appRouter = router({
         trpcServer.getImage.query(supabaseImageUrl)
       );
       product.image = await Promise.all(promises);
+      product.file = await trpcServer.getImage.query(product.file);
       return product;
     });
     const transformedProducts = await Promise.all(promises);
@@ -119,6 +122,7 @@ export const appRouter = router({
           trpcServer.getImage.query(supabaseImageUrl)
         );
         product.image = await Promise.all(promises);
+        product.file = await trpcServer.getImage.query(product.file);
         return product;
       });
       const transformedProducts = await Promise.all(promises);
@@ -147,6 +151,7 @@ export const appRouter = router({
         trpcServer.getImage.query(supabaseImageUrl)
       );
       product.image = await Promise.all(promises);
+      product.file = await trpcServer.getImage.query(product.file);
 
       return product;
     }),
@@ -235,6 +240,20 @@ export const appRouter = router({
     }
     return data;
   }),
+  filterByTagAndUser: publicProcedure
+    .input(z.object({ filter: z.string(), user: z.string() }))
+    .query(async ({ input }) => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .contains("tags", [input.filter])
+        .eq("author_id", input.user);
+      if (error) {
+        console.log(error);
+      }
+      return data;
+    }),
   addUser: publicProcedure.input(UserAddSchema).mutation(async ({ input }) => {
     const supabase = createClient();
     const { error } = await supabase.from("users").insert([input]);
@@ -290,6 +309,7 @@ export const appRouter = router({
           trpcServer.getImage.query(supabaseImageUrl)
         );
         item.image = await Promise.all(promises);
+        item.file = await trpcServer.getImage.query(item.file);
         return item;
       });
       const transformedProducts = await Promise.all(promises);

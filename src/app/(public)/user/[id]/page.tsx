@@ -34,7 +34,7 @@ export default async function User({ params }: { params: { id: string } }) {
             </p>
           </div>
           <div className="">
-            <Works initialFilter=""></Works>
+            <Works initialFilter="" user={user.id}></Works>
           </div>
         </div>
       )}

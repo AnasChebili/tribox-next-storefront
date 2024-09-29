@@ -24,7 +24,10 @@ export default function Home() {
       <div className="mx-[5%] my-24 " ref={targetRef}>
         <h1 className="text-5xl font-extralight">FEATURED WORKS</h1>
         <div>
-          <Works initialFilter={category ? category : ""}></Works>
+          <Works
+            initialFilter={category ? category : ""}
+            user={undefined}
+          ></Works>
         </div>
       </div>
     </div>

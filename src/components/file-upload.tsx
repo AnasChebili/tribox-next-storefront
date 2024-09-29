@@ -13,7 +13,7 @@ const projectId = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const bucketName = "documents";
 const supabaseUploadURL = `${projectId}/storage/v1/upload/resumable`;
 
-export default function FileUpload() {
+export default function FileUpload({ setFile }: { setFile: any }) {
   const [uppy] = useState(() =>
     new Uppy().use(Tus, {
       endpoint: supabaseUploadURL,
@@ -44,6 +44,7 @@ export default function FileUpload() {
       "Upload complete! We’ve uploaded these files:",
       result.successful
     );
+    setFile(result.successful?.[0].name);
   });
 
   return (

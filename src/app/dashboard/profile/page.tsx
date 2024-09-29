@@ -39,7 +39,7 @@ export default async function PrivatePage() {
         <p className="mt-2 font-light">You can upload more in the dashboard.</p>
       </div>
       <div className="">
-        <Works initialFilter=""></Works>
+        <Works initialFilter="" user={user.id}></Works>
       </div>
     </div>
   );

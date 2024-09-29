@@ -18,12 +18,24 @@ const FilterSelect = ({
 
 export default function Works({
   initialFilter = "",
+  user,
 }: {
   initialFilter: string;
+  user: string | undefined;
 }) {
   const [filter, setFilter] = useState(initialFilter);
-
-  const { data: works } = trpc.filterByTag.useQuery(filter);
+  let works;
+  if (user) {
+    works = trpc.filterByTagAndUser.useQuery(
+      {
+        filter: filter,
+        user: user,
+      },
+      { enabled: !!user }
+    ).data;
+  } else {
+    works = trpc.filterByTag.useQuery(filter).data;
+  }
 
   return (
     <div className="flex flex-col items-center ">
