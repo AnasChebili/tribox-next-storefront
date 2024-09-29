@@ -1,8 +1,7 @@
 import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
 import SidePanel from "@/components/sidepanel";
-import { appRouter } from "@/server";
-import { createContext, trpcServer } from "@/server/trpc";
+import { AppRouter, appRouter } from "@/server";
 import { createAdminContext } from "@/server/trpc-contexts";
 import { dehydrate, Hydrate, QueryClient } from "@tanstack/react-query";
 import { createServerSideHelpers } from "@trpc/react-query/server";
@@ -10,6 +9,7 @@ import { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { serialize } from "cookie";
 import { redirect } from "next/navigation";
+import { TRPCClientError } from "@trpc/client";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,15 +23,15 @@ export default async function DashboardLayout({
 }>) {
   let helpers = undefined;
   try {
-    const ctx = await createAdminContext({ cookies: headers().get("cookie") });
     helpers = createServerSideHelpers({
       router: appRouter,
-      ctx: ctx,
+      ctx: async () =>
+        await createAdminContext({ cookies: headers().get("cookie") }),
     });
-
     const authUser = await helpers.getAuthUser.fetch();
     await helpers.getUser.prefetch(authUser.user.id);
   } catch (error) {
+    console.log((error as TRPCClientError<AppRouter>).message);
     redirect("/login");
   }
 

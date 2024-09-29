@@ -2,7 +2,6 @@ import { createClient } from "../../utils/supabase/server";
 import {
   adminProcedure,
   createCallerFactory,
-  privateProcedure,
   publicProcedure,
   router,
 } from "./trpc";
@@ -74,7 +73,7 @@ const UserAddSchema = z.object({
 });
 
 export const appRouter = router({
-  getTodos: privateProcedure.query(async ({ ctx }) => {
+  getTodos: adminProcedure.query(async ({ ctx }) => {
     const supabase = createClient();
     const { data: products, error } = await supabase.from("products").select();
 
@@ -160,7 +159,6 @@ export const appRouter = router({
 
     return user[0];
   }),
-  // getAuthUser: privateProcedure.query(async ({ ctx }) => ctx),
   getAuthUser: adminProcedure.query(async ({ ctx }) => {
     // Access the validated user from ctx
     const user = ctx.user;

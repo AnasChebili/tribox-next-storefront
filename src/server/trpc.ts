@@ -1,3 +1,4 @@
+import "server-only";
 import { inferAsyncReturnType, initTRPC, TRPCError } from "@trpc/server";
 // utils/trpc-server.ts
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
@@ -22,14 +23,7 @@ import { createAdminContext } from "./trpc-contexts";
   return data.user;
 }; */
 
-export const createContext = async ({ req }: FetchCreateContextFnOptions) => {
-  // Pass the `req` object into the context so it's accessible in middleware
-  return { cookies: req.headers.get("cookie") };
-};
-
-export type Context = inferAsyncReturnType<typeof createContext>;
-
-export const t = initTRPC.create({
+export const t = initTRPC.context<Function>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
     return {
@@ -45,15 +39,21 @@ export const t = initTRPC.create({
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
-export const privateRouter = initTRPC.context<typeof createContext>().create();
-export const privateProcedure = privateRouter.procedure;
 
-export const adminProcedure = privateProcedure.use(async ({ ctx, next }) => {
+export const adminProcedure = publicProcedure.use(async ({ ctx, next }) => {
   try {
-    const adminCtx = await createAdminContext({ cookies: ctx.cookies });
+    const heads = (await ctx()) as Record<string, any>;
+    const adminCtx = await createAdminContext({
+      cookies: heads["cookies"],
+    });
+
     return next({ ctx: adminCtx });
   } catch (error) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    console.log(error);
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Failed to create admin procedure context",
+    });
   }
 });
 

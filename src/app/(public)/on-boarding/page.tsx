@@ -11,10 +11,10 @@ export default async function onBoardingPage() {
   let redirectPath: string | null = null;
   let helpers = undefined;
   try {
-    const ctx = await createAdminContext({ cookies: headers().get("cookie") });
     helpers = createServerSideHelpers({
       router: appRouter,
-      ctx: ctx,
+      ctx: async () =>
+        await createAdminContext({ cookies: headers().get("cookie") }),
     });
 
     const authUser = await helpers.getAuthUser.fetch();

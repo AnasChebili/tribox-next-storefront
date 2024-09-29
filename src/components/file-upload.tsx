@@ -40,10 +40,6 @@ export default function FileUpload({ setFile }: { setFile: any }) {
   });
 
   uppy.on("complete", (result) => {
-    console.log(
-      "Upload complete! We’ve uploaded these files:",
-      result.successful
-    );
     setFile(result.successful?.[0].name);
   });
 

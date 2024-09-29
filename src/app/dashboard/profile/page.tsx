@@ -3,7 +3,7 @@ import Image from "next/image";
 import SidePanel from "@/components/sidepanel";
 import Works from "@/components/works";
 import { trpc } from "@/app/_trpc/client";
-import { publicProcedure, t, trpcServer } from "@/server/trpc";
+import { trpcServer } from "@/server/server";
 
 export default async function PrivatePage() {
   const authUser = await trpcServer.getAuthUser();
