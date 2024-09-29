@@ -12,7 +12,7 @@ import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 
-export const registerFormSchema = z
+const registerFormSchema = z
   .object({
     email: z
       .string()
@@ -32,7 +32,7 @@ export const registerFormSchema = z
     path: ["confirmPassword"],
   });
 
-export type RegisterForm = z.infer<typeof registerFormSchema>;
+type RegisterForm = z.infer<typeof registerFormSchema>;
 
 export default function Home() {
   const router = useRouter();

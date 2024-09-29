@@ -4,7 +4,7 @@ import { parse } from "cookie";
 export const createAdminContext = async ({
   cookies: cookieString,
 }: {
-  cookies: string | null;
+  cookies: any | null;
 }) => {
   if (!cookieString) {
     throw new Error("No cookies");

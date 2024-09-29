@@ -57,7 +57,7 @@ export default function OnBoarding() {
   const { register, handleSubmit, reset } = useForm({
     values: {
       username: "",
-      email: authUser!.user!.email,
+      email: authUser!.user!.email!,
       name: "",
       bio: "",
     },
