@@ -5,6 +5,8 @@ import Works from "@/components/works";
 import { trpc } from "@/app/_trpc/client";
 import { trpcServer } from "@/server/server";
 
+export const dynamic = "force-dynamic";
+
 export default async function PrivatePage() {
   const authUser = await trpcServer.getAuthUser();
 

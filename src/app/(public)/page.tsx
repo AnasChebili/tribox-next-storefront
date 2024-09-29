@@ -5,9 +5,16 @@ import Works from "@/components/works";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
-  const searchParams = useSearchParams();
-  const category = searchParams.get("category");
+  let category: string | null | undefined;
+  if (typeof window !== "undefined") {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const searchParams = useSearchParams();
+    category = searchParams.get("category");
+  }
+
   const targetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
