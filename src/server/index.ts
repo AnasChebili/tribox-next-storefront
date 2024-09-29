@@ -5,13 +5,14 @@ import {
   privateProcedure,
   publicProcedure,
   router,
-  trpcServer,
 } from "./trpc";
 import { z } from "zod";
 import { inferRouterInputs, inferRouterOutputs, TRPCError } from "@trpc/server";
 import convertToSubcurrency from "@/lib/convertToSubcurrency";
 import { Database } from "../../database.types";
 import { error } from "console";
+import { ProductController } from "./controllers/product-controller";
+import { PaymentController } from "./controllers/payment-controller";
 
 const todoSchema = z.object({
   image: z.array(z.string()),
@@ -83,10 +84,10 @@ export const appRouter = router({
 
     const promises = products.map(async (product, index) => {
       const promises = (product.image as string[]).map((supabaseImageUrl) =>
-        trpcServer.getImage.query(supabaseImageUrl)
+        ProductController.getImage(supabaseImageUrl)
       );
       product.image = await Promise.all(promises);
-      // product.file = await trpcServer.getImage.query(product.file);
+      product.file = await ProductController.getImage(product.file);
       return product;
     });
     const transformedProducts = await Promise.all(promises);
@@ -116,10 +117,10 @@ export const appRouter = router({
 
       const promises = products.map(async (product, index) => {
         const promises = (product.image as string[]).map((supabaseImageUrl) =>
-          trpcServer.getImage.query(supabaseImageUrl)
+          ProductController.getImage(supabaseImageUrl)
         );
         product.image = await Promise.all(promises);
-        product.file = await trpcServer.getImage.query(product.file);
+        product.file = await ProductController.getImage(product.file);
         return product;
       });
       const transformedProducts = await Promise.all(promises);
@@ -129,28 +130,7 @@ export const appRouter = router({
   getProduct: publicProcedure
     .input(z.string().uuid())
     .query(async ({ input }) => {
-      const supabase = createClient();
-      const { data: products, error } = await supabase
-        .from("products")
-        .select()
-        .eq("id", input);
-
-      if (!products || error) throw error;
-
-      if (products.length <= 0)
-        throw new TRPCError({
-          code: "NOT_FOUND",
-        });
-
-      const product = products[0];
-
-      const promises = (product.image as string[]).map((supabaseImageUrl) =>
-        trpcServer.getImage.query(supabaseImageUrl)
-      );
-      product.image = await Promise.all(promises);
-      product.file = await trpcServer.getImage.query(product.file);
-
-      return product;
+      return ProductController.getProduct(input);
     }),
   deleteProduct: publicProcedure
     .input(z.string().uuid())
@@ -176,7 +156,7 @@ export const appRouter = router({
 
     if (!user || user.length <= 0) return undefined;
     if (user[0].image != "")
-      user[0].image = await trpcServer.getImage.query(user[0].image);
+      user[0].image = await ProductController.getImage(user[0].image);
 
     return user[0];
   }),
@@ -189,11 +169,7 @@ export const appRouter = router({
     return { success: true, user };
   }),
   getImage: publicProcedure.input(z.string()).query(async ({ input }) => {
-    const supabase = createClient();
-
-    const { data } = supabase.storage.from("documents").getPublicUrl(input);
-
-    return data.publicUrl;
+    return ProductController.getImage(input);
   }),
   updateUser: publicProcedure
     .input(UserUpdateSchema)
@@ -220,7 +196,7 @@ export const appRouter = router({
     if (!users) throw error;
     const promises = users.map(async (user, index) => {
       if (user.image !== "")
-        user.image = await trpcServer.getImage.query(user.image);
+        user.image = await ProductController.getImage(user.image);
       return user;
     });
     const transformedUsers = await Promise.all(promises);
@@ -266,11 +242,11 @@ export const appRouter = router({
         .select();
       if (error) console.log(error);
 
-      const res = await trpcServer.createPaymentIntent.query(input.amount);
+      const res = await PaymentController.createPaymentIntent(input.amount);
 
       return {
         order: data ? data[0].id : undefined,
-        //@ts-expect-error
+
         clientSecret: res.clientSecret ? res.clientSecret : res.error,
       };
     }),
@@ -303,10 +279,10 @@ export const appRouter = router({
       if (!transformedOrder.items) return transformedOrder;
       const promises = transformedOrder.items.map(async (item, index) => {
         const promises = (item.image as string[]).map((supabaseImageUrl) =>
-          trpcServer.getImage.query(supabaseImageUrl)
+          ProductController.getImage(supabaseImageUrl)
         );
         item.image = await Promise.all(promises);
-        item.file = await trpcServer.getImage.query(item.file);
+        item.file = await ProductController.getImage(item.file);
         return item;
       });
       const transformedProducts = await Promise.all(promises);
@@ -316,20 +292,7 @@ export const appRouter = router({
   createPaymentIntent: publicProcedure
     .input(z.number())
     .query(async ({ input }) => {
-      try {
-        const amount = input;
-        const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-        const paymentIntent = await stripe.paymentIntents.create({
-          amount: convertToSubcurrency(amount),
-          currency: "usd",
-          automatic_payment_methods: { enabled: true },
-        });
-
-        return { clientSecret: paymentIntent.client_secret };
-      } catch (error) {
-        console.log(error);
-        return { error: `internal server error: ${error}` };
-      }
+      return PaymentController.createPaymentIntent(input);
     }),
   addRating: publicProcedure
     .input(
@@ -341,7 +304,7 @@ export const appRouter = router({
     )
     .mutation(async ({ input }) => {
       const supabase = createClient();
-      const product = await trpcServer.getProduct.query(input.product);
+      const product = await ProductController.getProduct(input.product);
       const ratingInfo = product.rating_info;
 
       if (ratingInfo === null) {

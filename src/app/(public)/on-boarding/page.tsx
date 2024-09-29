@@ -5,7 +5,7 @@ import { createServerSideHelpers } from "@trpc/react-query/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import OnBoarding from "./on-boarding";
-import { trpcServer } from "@/server/trpc";
+import { trpcServer } from "@/server/server";
 
 export default async function onBoardingPage() {
   let redirectPath: string | null = null;
@@ -18,7 +18,7 @@ export default async function onBoardingPage() {
     });
 
     const authUser = await helpers.getAuthUser.fetch();
-    const user = await trpcServer.getUser.query(authUser.user.id);
+    const user = await trpcServer.getUser(authUser.user.id);
     if (user) {
       redirectPath = "/";
     }

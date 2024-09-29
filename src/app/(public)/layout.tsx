@@ -1,6 +1,6 @@
 import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
-import { trpcServer } from "@/server/trpc";
+import { trpcServer } from "@/server/server";
 import Providers from "@/store/providers";
 import store from "@/store/store";
 import { Metadata } from "next";

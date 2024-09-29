@@ -1,5 +1,5 @@
 import { RouterOutput } from "@/server";
-import { trpcServer } from "@/server/trpc";
+import { trpcServer } from "@/server/server";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,8 +14,8 @@ export default async function NavSign() {
   let signedIn = true;
   let user: RouterOutput["getUser"];
   try {
-    const authUser = await trpcServer.getAuthUser.query();
-    user = await trpcServer.getUser.query(authUser.user.id);
+    const authUser = await trpcServer.getAuthUser();
+    user = await trpcServer.getUser(authUser.user.id);
     // @ts-expect-error
     signedIn = authUser?.name !== "AuthSessionMissingError";
   } catch (error) {

@@ -1,4 +1,4 @@
-import { trpcServer } from "@/server/trpc";
+import { trpcServer } from "@/server/server";
 import { UUID } from "crypto";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,7 +24,7 @@ const CollabCard = async ({ id, image }: { id: string; image: string }) => {
 };
 
 export default async function Collaborations() {
-  const collabs = await trpcServer.getUsers.query();
+  const collabs = await trpcServer.getUsers();
 
   return (
     <div className=" ml-[5%] flex overflow-x-auto gap-4 no-scrollbar">

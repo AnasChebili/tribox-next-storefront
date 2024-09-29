@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Provider from "./_trpc/Provider";
-import { trpcServer } from "@/server/trpc";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 

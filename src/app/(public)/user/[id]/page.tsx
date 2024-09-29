@@ -1,9 +1,9 @@
 import Works from "@/components/works";
-import { trpcServer } from "@/server/trpc";
+import { trpcServer } from "@/server/server";
 import Image from "next/image";
 
 export default async function User({ params }: { params: { id: string } }) {
-  const user = await trpcServer.getUser.query(params.id);
+  const user = await trpcServer.getUser(params.id);
 
   return (
     <div className=" text-white  px-[5%] mt-20">

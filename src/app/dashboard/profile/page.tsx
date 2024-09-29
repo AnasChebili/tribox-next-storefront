@@ -6,9 +6,9 @@ import { trpc } from "@/app/_trpc/client";
 import { publicProcedure, t, trpcServer } from "@/server/trpc";
 
 export default async function PrivatePage() {
-  const authUser = await trpcServer.getAuthUser.query();
+  const authUser = await trpcServer.getAuthUser();
 
-  const user = await trpcServer.getUser.query(authUser.user.id);
+  const user = await trpcServer.getUser(authUser.user.id);
 
   if (!user) {
     redirect("/on-boarding");

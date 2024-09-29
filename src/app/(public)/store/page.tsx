@@ -3,17 +3,17 @@ import Categories from "@/components/categories";
 import Morning from "@/components/morning";
 import Recommendations from "@/components/recommendations";
 import Image from "next/image";
-import { trpcServer } from "@/server/trpc";
+import { trpcServer } from "@/server/server";
 import { createClient } from "../../../../utils/supabase/server";
 import { redirect } from "next/navigation";
 
 export default async function StoreAuth() {
   const supabase = createClient();
-  const products = await trpcServer.getTodos.query();
+  const products = await trpcServer.getTodos();
   let user;
   try {
-    const authUser = await trpcServer.getAuthUser.query();
-    user = await trpcServer.getUser.query(authUser.user.id);
+    const authUser = await trpcServer.getAuthUser();
+    user = await trpcServer.getUser(authUser.user.id);
   } catch (error) {
     user = undefined;
   }

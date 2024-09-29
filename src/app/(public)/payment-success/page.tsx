@@ -1,6 +1,6 @@
 import Providers from "@/store/providers";
 import PaymentSuccess from "./payment-success";
-import { trpcServer } from "@/server/trpc";
+import { trpcServer } from "@/server/server";
 import { redirect } from "next/navigation";
 import { RouterOutput } from "@/server";
 
@@ -9,7 +9,7 @@ export default async function PaymentSuccessPage({
 }: {
   searchParams: { orderId: string };
 }) {
-  const order = await trpcServer.getOrder.query({ orderId: orderId });
+  const order = await trpcServer.getOrder({ orderId: orderId });
 
   if (!order) redirect("/");
   let amount = 0;

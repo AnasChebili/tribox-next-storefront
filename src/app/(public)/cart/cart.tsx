@@ -42,9 +42,7 @@ const Cart = ({ toPaymentBool }: { toPaymentBool: boolean }) => {
   }, [cartItems, toPaymentBool]);
 
   const removeCard = (id: string) => {
-    const cart = cartItems.filter(
-      (item: RouterOutput["getProduct"]) => item.id !== id
-    );
+    const cart = cartItems.filter((item) => item.id !== id);
     localStorage.setItem("cart", JSON.stringify(cart));
     toast.success("removed from cart");
     setCartItems(cart);
