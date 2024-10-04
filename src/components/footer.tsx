@@ -46,7 +46,7 @@ export default function Footer() {
       </div>
       <div className="terms">
         <div className="h-[0.5px] mb-4 bg-grayf"></div>
-        <p className="text-grayf text-[15px] float-right mb-4">
+        <p className="text-[15px] float-right mb-4">
           Terms & Conditions | Privacy Policy
         </p>
       </div>
