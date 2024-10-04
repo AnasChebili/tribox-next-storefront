@@ -21,7 +21,7 @@ export default function Home() {
       </h1>
       <div className="mx-[5%]">
         <p>
-          Di-Box is pretty cool. We’re not like other asset stores. W’re not
+          Tri-Box is pretty cool. We’re not like other asset stores. W’re not
           lying and we actually care about you as a designer. That’s why we
           collaborate with only the best artists in the world. Our assets are
           completely free to use in your next big project. We really do mean it
@@ -53,7 +53,7 @@ export default function Home() {
 
       <div className="mx-[5%] mt-14">
         <p>
-          Di-Box is pretty cool. We’re not like other asset stores. W’re not
+          Tri-Box is pretty cool. We’re not like other asset stores. W’re not
           lying and we actually care about you as a designer. That’s why we
           collaborate with only the best artists in the world. Our assets are
           completely free to use in your next big project. We really do mean it

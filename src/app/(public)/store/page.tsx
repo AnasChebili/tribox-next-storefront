@@ -43,7 +43,7 @@ export default async function StoreAuth() {
       </div>
 
       <div className="my-11  ml-[5%]">
-        <h1 className="text-4xl font-bold">Acedia x Di-Box Collection</h1>
+        <h1 className="text-4xl font-bold">Acedia x Tri-Box Collection</h1>
         <p className="mt-2 font-light sm:w-1/2">
           Lorem Ipsum is simply dummy text of the printing and typesetting
           industry. Lorem Ipsum has been the industry's standard dummy text ever

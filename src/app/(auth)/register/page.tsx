@@ -76,7 +76,7 @@ export default function Home() {
         </div>
       </div>
       <div className="mt-10 mb-10">
-        <h1 className="font-bold text-4xl font-serif">Welcome To Di-Box</h1>
+        <h1 className="font-bold text-4xl font-serif">Welcome To Tri-Box</h1>
         <p className="text-xs w-2/3 mt-2">
           Just need a little bit of your information and I’ll give you your very
           own account!
