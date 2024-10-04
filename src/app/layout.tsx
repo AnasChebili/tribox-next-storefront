@@ -17,6 +17,9 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/art.svg" />
+      </head>
       <body>
         <Provider>{children}</Provider>
         <Toaster richColors></Toaster>
