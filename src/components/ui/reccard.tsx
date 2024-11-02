@@ -32,7 +32,7 @@ export default function RecCard({
           <p className="font-semibold text-xs mr-1">{product.rating}</p>
           <Image src="/Star 7.svg" alt="" width={10} height={10}></Image>
         </div>
-        <h1 className="text-3xl h-[80px] overflow-hidden line-clamp-2 text-ellipsis font-bold w-[75%] break-words">
+        <h1 className="text-3xl overflow-hidden line-clamp-2 text-ellipsis font-bold w-[75%] break-words">
           {product.title}
         </h1>
         <div className="flex mt-1">

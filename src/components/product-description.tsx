@@ -87,7 +87,7 @@ export default function ProductDescription({
               (boughtProduct) => boughtProduct === product.id
             )
               ? "Download"
-              : "Buy now for $30"}
+              : `Buy now for ${product.price} $`}
           </button>
           <button
             onClick={addToCart}
