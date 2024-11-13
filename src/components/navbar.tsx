@@ -72,12 +72,9 @@ export default function Navbar() {
         </section>
       </nav>
 
-      <nav className="block lg:hidden">
+      <nav className="block lg:hidden w-full bg-black fixed top-0 z-10">
         <Sheet>
-          <SheetTrigger
-            className="w-full bg-black fixed -mt-[24px] z-10"
-            aria-label="open navigation menu"
-          >
+          <SheetTrigger aria-label="open navigation menu">
             <Image src="/menu.png" alt="" width={65} height={65}></Image>
           </SheetTrigger>
           <SheetContent side="left" className="w-full bg-black" icon="h-8 w-8">
