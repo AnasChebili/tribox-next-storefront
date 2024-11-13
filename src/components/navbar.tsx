@@ -30,42 +30,55 @@ const links = [
 ];
 export default function Navbar() {
   return (
-    <div className="">
-      <div className=" hidden  navbar lg:flex justify-between mx-20 mt-8 ">
-        <Link href="/">
-          <Image src="/logo.svg" alt="" width={70} height={45}></Image>
-        </Link>
-
-        <div className="navllinks flex gap-12 items-center">
-          <Link href="/">Home</Link>
-          <Link href="/store">Store</Link>
-          {/* <Link href="/product-listing">Categories</Link> */}
-          <Link href="/about">About</Link>
-
-          <Link href="/cart">
-            <div className="Cart flex">
-              <div className="h-[50px] w-[70px] bg-black rounded-3xl leading-[48px] align-middle text-center cursor-pointer">
-                Cart
-              </div>
-              <div>
-                <Image
-                  src="/cart.svg"
-                  alt=""
-                  width={50}
-                  height={50}
-                  className="cursor-pointer"
-                ></Image>
-              </div>
-            </div>
+    <>
+      <nav className=" hidden  navbar lg:flex justify-between mx-20 mt-8 ">
+        <section>
+          <Link href="/">
+            <Image src="/logo.svg" alt="" width={70} height={45}></Image>
           </Link>
-          <NavSign></NavSign>
-        </div>
-      </div>
+        </section>
 
-      <div className="block lg:hidden">
+        <section>
+          <ul className="navllinks flex gap-12 items-center">
+            <li>
+              <Link href="/">Home</Link>{" "}
+            </li>
+            <li>
+              <Link href="/store">Store</Link>
+            </li>
+            <li>
+              <Link href="/about">About</Link>
+            </li>
+            <li>
+              <Link href="/cart">
+                <figure className="Cart flex">
+                  <figcaption className="h-[50px] w-[70px] bg-black rounded-3xl leading-[48px] align-middle text-center cursor-pointer">
+                    Cart
+                  </figcaption>
+                  <Image
+                    src="/cart.svg"
+                    alt=""
+                    width={50}
+                    height={50}
+                    className="cursor-pointer"
+                  ></Image>
+                </figure>
+              </Link>
+            </li>
+            <li>
+              <NavSign></NavSign>
+            </li>
+          </ul>
+        </section>
+      </nav>
+
+      <nav className="block lg:hidden">
         <Sheet>
           <SheetTrigger>
-            <div className="w-full bg-black fixed -mt-[24px] z-10">
+            <button
+              className="w-full bg-black fixed -mt-[24px] z-10"
+              aria-label="open navigation menu"
+            >
               <Image
                 src="/menu.png"
                 alt=""
@@ -73,13 +86,13 @@ export default function Navbar() {
                 height={65}
                 className="cursor-pointer"
               ></Image>
-            </div>
+            </button>
           </SheetTrigger>
           <SheetContent side="left" className="w-full bg-black" icon="h-8 w-8">
-            <div className=" space-y-10 text-white p-5">
-              <div className=" flex flex-col items-start h-full gap-8 text-2xl  ">
-                {links.map((element, index) => (
-                  <SheetClose key={index} asChild>
+            <ul className=" flex flex-col items-start h-full gap-8 text-2xl  p-5">
+              {links.map((element, index) => (
+                <li key={index}>
+                  <SheetClose asChild>
                     <Link
                       href={element.link}
                       className="flex gap-2 items-center"
@@ -88,12 +101,12 @@ export default function Navbar() {
                       {element.name}
                     </Link>
                   </SheetClose>
-                ))}
-              </div>
-            </div>
+                </li>
+              ))}
+            </ul>
           </SheetContent>
         </Sheet>
-      </div>
-    </div>
+      </nav>
+    </>
   );
 }
