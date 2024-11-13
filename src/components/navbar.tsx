@@ -30,7 +30,7 @@ const links = [
 ];
 export default function Navbar() {
   return (
-    <>
+    <header>
       <nav className=" hidden  navbar lg:flex justify-between mx-20 mt-8 ">
         <section>
           <Link href="/">
@@ -99,6 +99,6 @@ export default function Navbar() {
           </SheetContent>
         </Sheet>
       </nav>
-    </>
+    </header>
   );
 }

@@ -13,7 +13,7 @@ export default function WorkCard({
   const imgUrl = imgUrlObj.data;
 
   return (
-    <div className="cursor-pointer">
+    <>
       <Link href={`/product-listing/${product.id}`}>
         <div className="h-[300px] overflow-hidden">
           {imgUrl && (
@@ -59,6 +59,6 @@ export default function WorkCard({
           View Details
         </button>
       </Link>
-    </div>
+    </>
   );
 }

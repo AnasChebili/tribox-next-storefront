@@ -25,18 +25,20 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
-      <AssetMarket></AssetMarket>
-      <Break></Break>
-      <div className="mx-[5%] my-24 " ref={targetRef}>
+    <>
+      <section className="flex justify-between items-center mt-16">
+        <AssetMarket></AssetMarket>
+      </section>
+      <section>
+        <Break></Break>
+      </section>
+      <main className="mx-[5%] my-24 " ref={targetRef}>
         <h1 className="text-5xl font-extralight">FEATURED WORKS</h1>
-        <div>
-          <Works
-            initialFilter={category ? category : ""}
-            user={undefined}
-          ></Works>
-        </div>
-      </div>
-    </div>
+        <Works
+          initialFilter={category ? category : ""}
+          user={undefined}
+        ></Works>
+      </main>
+    </>
   );
 }

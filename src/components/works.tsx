@@ -13,7 +13,9 @@ const FilterSelect = ({
   title: string;
   isSelected: boolean;
 }) => {
-  return <li className={cn({ "text-red-600 flex": isSelected })}>{title}</li>;
+  return (
+    <span className={cn({ "text-red-600 flex": isSelected })}>{title}</span>
+  );
 };
 
 export default function Works({
@@ -39,7 +41,7 @@ export default function Works({
 
   return (
     <div className="flex flex-col items-center ">
-      <div className="my-12">
+      <header className="my-12">
         <ul className=" hidden md:flex space-x-6 text-sm  cursor-pointer">
           <li
             className={cn({ "text-red-600 flex": filter === "" })}
@@ -50,7 +52,7 @@ export default function Works({
             All
           </li>
           {tagsTable.map((element, index) => (
-            <div
+            <li
               key={index}
               onClick={() => {
                 setFilter(element.key);
@@ -60,21 +62,19 @@ export default function Works({
                 title={element.title}
                 isSelected={element.key === filter}
               ></FilterSelect>
-            </div>
+            </li>
           ))}
         </ul>
-      </div>
-      <div className="min-h-[400px] flex items-center">
-        {works ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-28">
-            {works.map((work, index) => (
-              <WorkCard key={index} product={work}></WorkCard>
-            ))}
-          </div>
-        ) : (
-          <Spinner className="text-white h-10 w-10"></Spinner>
-        )}
-      </div>
+      </header>
+      {works ? (
+        <section className="min-h-[400px] items-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-28">
+          {works.map((work, index) => (
+            <WorkCard key={index} product={work}></WorkCard>
+          ))}
+        </section>
+      ) : (
+        <Spinner className="text-white h-10 w-10"></Spinner>
+      )}
     </div>
   );
 }
