@@ -28,6 +28,23 @@ const links = [
   { name: "Profile", link: "/dashboard/profile", Icon: <UserIcon /> },
   { name: "Settings", link: "/dashboard/settings", Icon: <SettingsIcon /> },
 ];
+
+type AnyError =
+  | {
+      type: "error";
+      error: Error;
+    }
+  | {
+      type: "custom";
+      message: string;
+    };
+
+const anyError: AnyError = { type: "custom", message: "" };
+
+type NavbarProps =
+  | { props: string; includeProps: never | true }
+  | { includeProps: false };
+
 export default function Navbar() {
   return (
     <header>
