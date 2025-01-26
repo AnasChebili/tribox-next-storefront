@@ -31,7 +31,7 @@ export default function WorkCard({
           <p className="font-semibold mr-1">{product.rating}</p>
           <Image src="/Star 7.svg" alt="" width={15} height={15}></Image>
         </div>
-        <h1 className="text-5xl font-bold w-[75%] overflow-hidden line-clamp-2 text-ellipsis break-words">
+        <h1 className="text-[48px] font-bold w-[75%] overflow-hidden line-clamp-2 text-ellipsis break-words">
           {product.title}
         </h1>
         <div className="flex mt-2">
