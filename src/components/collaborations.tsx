@@ -29,13 +29,23 @@ export default async function Collaborations() {
   return (
     <div className=" ml-[5%] flex overflow-x-auto gap-4 no-scrollbar">
       {collabs &&
-        collabs.map((collab, index) => (
-          <CollabCard
-            key={collab.id}
-            id={collab.id}
-            image={collab.image !== "" ? collab.image : "/anonymous-avatar.png"}
-          ></CollabCard>
-        ))}
+        collabs
+          .sort(
+            (collab1, collab2) =>
+              Date.parse(collab1.created_at!) - Date.parse(collab2.created_at!)
+          )
+          .map(
+            (collab, index) =>
+              index < 5 && (
+                <CollabCard
+                  key={collab.id}
+                  id={collab.id}
+                  image={
+                    collab.image !== "" ? collab.image : "/anonymous-avatar.png"
+                  }
+                ></CollabCard>
+              )
+          )}
     </div>
   );
 }
